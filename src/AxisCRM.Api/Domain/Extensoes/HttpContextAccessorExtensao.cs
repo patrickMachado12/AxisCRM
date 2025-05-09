@@ -1,0 +1,18 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+namespace AxisCRM.Api.Domain.Extensoes
+{
+    public static class HttpContextAccessorExtensao
+    {
+        public static string ObterEmailUsuarioLogado(this IHttpContextAccessor httpContextAccessor)
+        {
+            return httpContextAccessor.HttpContext?.User?
+                .FindFirst(ClaimTypes.Email)?
+                    .Value ?? throw new UnauthorizedAccessException("Usuário não autenticado.");
+        }
+    }
+}
