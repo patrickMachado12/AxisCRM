@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{641A602C-730B-4454-A30A-B8ACAF7BBDD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AxisCRM.Api", "src\AxisCRM.Api\AxisCRM.Api.csproj", "{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7A0EA412-89D6-4013-BB0D-EE65EB465913}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AxisCRM.Test", "test\AxisCRM.Test\AxisCRM.Test.csproj", "{8BDCACF5-3B31-41E1-8D5A-C877A19E1897}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BDCACF5-3B31-41E1-8D5A-C877A19E1897}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BDCACF5-3B31-41E1-8D5A-C877A19E1897}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BDCACF5-3B31-41E1-8D5A-C877A19E1897}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BDCACF5-3B31-41E1-8D5A-C877A19E1897}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A5BBD52C-D2AA-41B8-BE19-56DCD4D7E86D} = {641A602C-730B-4454-A30A-B8ACAF7BBDD4}
+		{8BDCACF5-3B31-41E1-8D5A-C877A19E1897} = {7A0EA412-89D6-4013-BB0D-EE65EB465913}
+	EndGlobalSection
+EndGlobal
