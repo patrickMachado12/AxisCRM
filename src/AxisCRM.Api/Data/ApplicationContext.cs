@@ -11,6 +11,7 @@ namespace AxisCRM.Api.Data
     public class ApplicationContext : DbContext
     {
         public DbSet<Usuario> Usuario { get; set; }
+        public DbSet<Cliente> Cliente { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {   
@@ -19,6 +20,7 @@ namespace AxisCRM.Api.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UsuarioMap());
+            modelBuilder.ApplyConfiguration(new ClienteMap());
         }
     }
 }

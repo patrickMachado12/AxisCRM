@@ -26,12 +26,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
         private readonly TokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
     
-        public UsuarioService(
-            IUsuarioRepository usuarioRepository,
+        public UsuarioService(IUsuarioRepository usuarioRepository,
             IMapper mapper,
             TokenService tokenService,
-            IHttpContextAccessor httpContextAccessor
-            )
+            IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _mapper = mapper;
