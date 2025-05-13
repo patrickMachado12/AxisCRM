@@ -30,7 +30,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
         }
         
         public async Task<ClienteResponseDTO> Adicionar(ClienteRequestDTO entidade)
-        {            
+        {           
             if (await _clienteRepository.ObterPorCpfCnpjAsync(entidade.CpfCnpj) != null)
                 throw new BadRequestException("Já existe um cliente cadastrado com este CPF/CNPJ.");
                 
@@ -50,9 +50,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
             _mapper.Map(entidade, existente);
 
             var outroComMesmoCpfCnpj = await _clienteRepository.ObterPorCpfCnpjAsync(existente.CpfCnpj);
-
-            if (await _clienteRepository.ObterPorCpfCnpjAsync(outroComMesmoCpfCnpj.CpfCnpj) != null)
-                throw new BadRequestException("Já existe um cliente cadastrado com este CPF/CNPJ.");
+            RegraNegocio.Validate(
+                (outroComMesmoCpfCnpj == null || outroComMesmoCpfCnpj.Id == existente.Id,
+                "Já existe outro usuário com este e-mail.")            
+            );
 
             await _clienteRepository.AtualizarAsync(existente);
 
@@ -65,7 +66,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
                 ?? throw new NotFoundException($"Cliente (ID {id}) não encontrado para exclusão.");
 
             if (cliente.Excluido)
-                throw new BadRequestException("Cliente já está excluído.");
+                throw new BadRequestException("Cliente ja se encontra excluído.");
 
             cliente.Excluido = true;
             cliente.DataExclusao = DateTime.Now;   

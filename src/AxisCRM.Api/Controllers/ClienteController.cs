@@ -6,6 +6,7 @@ using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Cliente;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -25,6 +26,7 @@ namespace AxisCRM.Api.Controllers
         }
         
         [HttpPost]
+        [Authorize]
         [SwaggerOperation(
             Summary = "Adiciona um novo cliente.", 
             Description = "Este endpoint adiciona um novo cliente no sistema."
@@ -44,6 +46,7 @@ namespace AxisCRM.Api.Controllers
         }
         
         [HttpGet]
+        [Authorize]
         [SwaggerOperation(
             Summary = "Obtém uma lista de clientes.", 
             Description = "Este endpoint lista todos os clientes cadastrados no sistema."
@@ -57,6 +60,7 @@ namespace AxisCRM.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("{id}")]
         [SwaggerOperation(
             Summary = "Obtém um cliente por identificador específico.", 
@@ -71,6 +75,7 @@ namespace AxisCRM.Api.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("{id}")]
         [SwaggerOperation(
             Summary = "Atualiza um cliente existente.", 
@@ -91,6 +96,7 @@ namespace AxisCRM.Api.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("{id}")]
         [SwaggerOperation(
             Summary = "Exclui um cliente.", 

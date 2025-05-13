@@ -215,9 +215,9 @@ namespace AxisCRM.Test.Controllers
             };
             var resp = new UsuarioResponseDTO 
             { 
-                Id           = 1, 
-                Email        = dto.Email, 
-                Perfil       = (int)dto.Perfil.Value, 
+                Id  = 1, 
+                Email = dto.Email, 
+                Perfil = (int)dto.Perfil.Value, 
                 DataCadastro = DateTime.Today 
             }; 
 
@@ -227,7 +227,7 @@ namespace AxisCRM.Test.Controllers
 
             var result = await _controller.Atualizar(1, dto);
 
-            var ok    = Assert.IsType<OkObjectResult>(result.Result);
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
             var value = Assert.IsType<UsuarioResponseDTO>(ok.Value);
             Assert.Equal(resp.Id, value.Id);
             Assert.Equal(resp.Email, value.Email);
