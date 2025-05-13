@@ -13,6 +13,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
     public class UsuarioRepository : IUsuarioRepository
     {
         private readonly ApplicationContext _contexto;
+
         public UsuarioRepository(ApplicationContext context)
         {
             _contexto = context;

@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using AxisCRM.Api.Domain.Validator.ClienteValidator;
+using AxisCRM.Api.Domain.Validator.AtendimentoValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
         
         cfg.AddProfile<UsuarioProfile>();
         cfg.AddProfile<ClienteProfile>();
+        cfg.AddProfile<AtendimentoProfile>();
     });
 
     IMapper mapper = config.CreateMapper();
@@ -54,7 +56,10 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddValidatorsFromAssemblyContaining<UsuarioLoginValidador>()
     .AddTransient<IClienteRepository, ClienteRepository>()
     .AddTransient<IClienteService, ClienteService>()
-    .AddTransient<ClienteValidador>();
+    .AddTransient<ClienteValidador>()
+    .AddTransient<IAtendimentoRepository, AtendimentoRepository>()
+    .AddTransient<IAtendimentoService, AtendimentoService>()
+    .AddTransient<AtendimentoValidador>();
 }
 
 static void ConfigurarServices(WebApplicationBuilder builder)

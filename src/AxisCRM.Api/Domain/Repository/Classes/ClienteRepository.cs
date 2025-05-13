@@ -9,75 +9,76 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AxisCRM.Api.Domain.Repository.Classes
 {
-  public class ClienteRepository : IClienteRepository
-  {
-		private readonly ApplicationContext _contexto;
-		public ClienteRepository(ApplicationContext context)
-		{
-		_contexto = context;
-		}
+    public class ClienteRepository : IClienteRepository
+    {
+        private readonly ApplicationContext _contexto;
 
-		public async Task<Cliente> AdicionarAsync(Cliente entidade)
-		{
-			await _contexto.Cliente.AddAsync(entidade);
-			await _contexto.SaveChangesAsync();
+        public ClienteRepository(ApplicationContext context)
+        {
+            _contexto = context;
+        }
 
-			return entidade;
-		}
+        public async Task<Cliente> AdicionarAsync(Cliente entidade)
+        {
+            await _contexto.Cliente.AddAsync(entidade);
+            await _contexto.SaveChangesAsync();
 
-		public async Task<Cliente> AtualizarAsync(Cliente entidade)
-		{
-		Cliente? entidadeBanco = await _contexto.Cliente
-													.Where(u => u.Id == entidade.Id)
-													.FirstOrDefaultAsync();
+            return entidade;
+        }
 
-				_contexto.Entry(entidadeBanco).CurrentValues.SetValues(entidade);
-				_contexto.Update<Cliente>(entidadeBanco);
+        public async Task<Cliente> AtualizarAsync(Cliente entidade)
+        {
+            Cliente? entidadeBanco = await _contexto.Cliente
+                                                        .Where(u => u.Id == entidade.Id)
+                                                        .FirstOrDefaultAsync();
 
-				await _contexto.SaveChangesAsync();
+            _contexto.Entry(entidadeBanco).CurrentValues.SetValues(entidade);
+            _contexto.Update<Cliente>(entidadeBanco);
 
-				return entidadeBanco;
-		}
+            await _contexto.SaveChangesAsync();
 
-		public Task ExcluirAsync(Cliente entidade)
-		{
-			_contexto.Update<Cliente>(entidade);
-				return _contexto.SaveChangesAsync();
-		}
+            return entidadeBanco;
+        }
 
-		public async Task<IEnumerable<Cliente>> ObterAsync()
-		{
-		return await _contexto.Cliente.AsNoTracking()
-												.OrderBy(u => u.Id)
-												.ToListAsync();
-		}
+        public Task ExcluirAsync(Cliente entidade)
+        {
+            _contexto.Update<Cliente>(entidade);
+            return _contexto.SaveChangesAsync();
+        }
 
-		public async Task<(IEnumerable<Cliente> Clientes, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
-		{
-		var query = _contexto.Cliente.AsQueryable();
-				var totalItens = await query.CountAsync();
+        public async Task<IEnumerable<Cliente>> ObterAsync()
+        {
+            return await _contexto.Cliente.AsNoTracking()
+                                                    .OrderBy(u => u.Id)
+                                                    .ToListAsync();
+        }
 
-				query = query.OrderBy(u => u.Id);
+        public async Task<(IEnumerable<Cliente> Clientes, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
+        {
+            var query = _contexto.Cliente.AsQueryable();
+            var totalItens = await query.CountAsync();
 
-				var clientes = await query
-					.Skip((pagina - 1) * tamanhoPagina)
-					.Take(tamanhoPagina)
-					.ToListAsync();
+            query = query.OrderBy(u => u.Id);
 
-				return (clientes, totalItens);
-		}
+            var clientes = await query
+                .Skip((pagina - 1) * tamanhoPagina)
+                .Take(tamanhoPagina)
+                .ToListAsync();
 
-		public async Task<Cliente> ObterPorIdAsync(int id)
-		{
-		return await _contexto.Cliente.Where(u => u.Id == id)
-												.FirstOrDefaultAsync();
-		}
+            return (clientes, totalItens);
+        }
 
-		public async Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj)
-		{
-			return await _contexto.Cliente.AsNoTracking()
-				.Where(u => u.CpfCnpj == cpfCnpj)
-				.FirstOrDefaultAsync();
-		}
-  	}
+        public async Task<Cliente> ObterPorIdAsync(int id)
+        {
+            return await _contexto.Cliente.Where(u => u.Id == id)
+                                                    .FirstOrDefaultAsync();
+        }
+
+        public async Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj)
+        {
+            return await _contexto.Cliente.AsNoTracking()
+                .Where(u => u.CpfCnpj == cpfCnpj)
+                .FirstOrDefaultAsync();
+        }
+    }
 }

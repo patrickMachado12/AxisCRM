@@ -24,7 +24,7 @@ namespace AxisCRM.Api.Controllers
             }
             catch (NotFoundException ex)
             {
-                return NotFound(new ModelErrorDTO("Not found", 404, ex.Message));
+                return NotFound(new ModelErrorDTO("Not Found", 404, ex.Message));
             }
             catch (BadRequestException ex)
             {
