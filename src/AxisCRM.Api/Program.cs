@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AxisCRM.Api.Domain.Validator.ClienteValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     var config = new MapperConfiguration(cfg => {
         
         cfg.AddProfile<UsuarioProfile>();
+        cfg.AddProfile<ClienteProfile>();
     });
 
     IMapper mapper = config.CreateMapper();
@@ -49,7 +51,10 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddScoped<IUsuarioService, UsuarioService>()
     .AddTransient<UsuarioCadastroValidador>()
     .AddTransient<UsuarioEdicaoValidador>()
-    .AddValidatorsFromAssemblyContaining<UsuarioLoginValidador>();
+    .AddValidatorsFromAssemblyContaining<UsuarioLoginValidador>()
+    .AddTransient<IClienteRepository, ClienteRepository>()
+    .AddTransient<IClienteService, ClienteService>()
+    .AddTransient<ClienteValidador>();
 }
 
 static void ConfigurarServices(WebApplicationBuilder builder)

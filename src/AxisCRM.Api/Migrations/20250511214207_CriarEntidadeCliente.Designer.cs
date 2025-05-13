@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AxisCRM.Api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250407232121_CriarEntidadeUsuario")]
-    partial class CriarEntidadeUsuario
+    [Migration("20250511214207_CriarEntidadeCliente")]
+    partial class CriarEntidadeCliente
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,61 @@ namespace AxisCRM.Api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Cliente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CpfCnpj")
+                        .IsRequired()
+                        .HasMaxLength(18)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Observacao")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<int>("TipoPessoa")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CpfCnpj")
+                        .IsUnique();
+
+                    b.ToTable("cliente", (string)null);
+                });
 
             modelBuilder.Entity("AxisCRM.Api.Domain.Models.Usuario", b =>
                 {
@@ -41,8 +96,8 @@ namespace AxisCRM.Api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("Excluido")
                         .ValueGeneratedOnAdd()

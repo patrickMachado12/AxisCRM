@@ -10,7 +10,7 @@ using Xunit;
 
 namespace AxisCRM.Test.Validators
 {
-public class UsuarioValidadorTests
+    public class UsuarioValidadorTests
     {
         private readonly UsuarioCadastroValidador _usuarioCadastroValidator;
 
