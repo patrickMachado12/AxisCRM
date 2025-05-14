@@ -13,6 +13,7 @@ namespace AxisCRM.Api.Data
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Cliente> Cliente { get; set; }
         public DbSet<Atendimento> Atendimento { get; set; }
+        public DbSet<Parecer> Parecer { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {   
@@ -23,6 +24,7 @@ namespace AxisCRM.Api.Data
             modelBuilder.ApplyConfiguration(new UsuarioMap());
             modelBuilder.ApplyConfiguration(new ClienteMap());
             modelBuilder.ApplyConfiguration(new AtendimentoMap());
+            modelBuilder.ApplyConfiguration(new ParecerMap());
         }
     }
 }

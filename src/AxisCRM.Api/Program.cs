@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using AxisCRM.Api.Domain.Validator.ClienteValidator;
 using AxisCRM.Api.Domain.Validator.AtendimentoValidator;
+using AxisCRM.Api.Domain.Validator.ParecerValidator;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,7 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
         cfg.AddProfile<UsuarioProfile>();
         cfg.AddProfile<ClienteProfile>();
         cfg.AddProfile<AtendimentoProfile>();
+        cfg.AddProfile<ParecerProfile>();
     });
 
     IMapper mapper = config.CreateMapper();
@@ -59,7 +61,10 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddTransient<ClienteValidador>()
     .AddTransient<IAtendimentoRepository, AtendimentoRepository>()
     .AddTransient<IAtendimentoService, AtendimentoService>()
-    .AddTransient<AtendimentoValidador>();
+    .AddTransient<AtendimentoValidador>()
+    .AddTransient<IParecerRepository, ParecerRepository>()
+    .AddTransient<IParecerService, ParecerService>()
+    .AddTransient<ParecerValidador>();
 }
 
 static void ConfigurarServices(WebApplicationBuilder builder)

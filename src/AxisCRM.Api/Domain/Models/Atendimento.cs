@@ -13,8 +13,8 @@ namespace AxisCRM.Api.Domain.Models
         public DateTime? DataEncerramento { get; set; }
         public DateTime DataUltimaAtualizacao { get; set; } = DateTime.Now;
         public int IdCliente { get; set; }
-        public int IdUsuario { get; set; }
         public Cliente Cliente { get; set; }
+        public int IdUsuario { get; set; }
         public Usuario Usuario { get; set; }
     }
 }
