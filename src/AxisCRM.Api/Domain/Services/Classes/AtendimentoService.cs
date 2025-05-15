@@ -38,10 +38,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
         public async Task<AtendimentoResponseDTO> Adicionar(AtendimentoRequestDTO entidade)
         {
             if (await _usuarioRepository.ObterPorIdAsync(entidade.IdUsuario) == null)
-                throw new BadRequestException($"Usuário não encontrado com id {entidade.IdUsuario}");
+                throw new BadRequestException($"Usuário com id {entidade.IdUsuario} não encontrado. Verifique!");
 
             if (await _clienteRepository.ObterPorIdAsync(entidade.IdCliente) == null)
-                throw new BadRequestException($"Usuário não encontrado com id {entidade.IdCliente}");
+                throw new BadRequestException($"Cliente com id {entidade.IdCliente} não encontrado. Verifique!");
 
             var entity = _mapper.Map<Atendimento>(entidade);
             entity.DataCadastro = DateTime.Now;

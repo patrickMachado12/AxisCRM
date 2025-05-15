@@ -9,6 +9,12 @@ namespace AxisCRM.Api.Domain.Validator.AtendimentoValidator
 {
     public class AtendimentoValidador : AbstractValidator<AtendimentoRequestDTO>
     {
-        
+        public AtendimentoValidador()
+        {
+            RuleFor(x => x.Assunto)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().WithMessage("O assunto não pode ser vazio.")
+                .NotNull().WithMessage("O assunto não pode ser nulo.");
+        }
     }
 }

@@ -46,10 +46,10 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AtendimentoResponseDTO>> AdicionarAtendimento(AtendimentoRequestDTO dto)
         {
-            var validacao = _atendimentoValidator.Validate(dto);
+            var validacaoAtendimento = _atendimentoValidator.Validate(dto);
 
-            if (!validacao.IsValid)
-                return BadRequest(validacao.Errors.Select(e => new { e.ErrorMessage }));
+            if (!validacaoAtendimento.IsValid)
+                return BadRequest(validacaoAtendimento.Errors.Select(e => new { e.ErrorMessage }));
 
             return await ProcessarTarefa(_atendimentoService.Adicionar(dto), false);
         }
@@ -93,10 +93,10 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AtendimentoResponseDTO>> Atualizar(int idAtendimento, AtendimentoRequestDTO dto)
         {
-           var validacao = _atendimentoValidator.Validate(dto);
+           var validacaoAtendimento = _atendimentoValidator.Validate(dto);
            
-           if (!validacao.IsValid)
-              return BadRequest(validacao.Errors.Select(e => new { e.ErrorMessage }));
+           if (!validacaoAtendimento.IsValid)
+              return BadRequest(validacaoAtendimento.Errors.Select(e => new { e.ErrorMessage }));
 
             return await ProcessarTarefa(_atendimentoService.Atualizar(idAtendimento, dto));
         }
@@ -143,10 +143,10 @@ namespace AxisCRM.Api.Controllers
         {
             dto.IdAtendimento = idAtendimento;
 
-            var validacao = _parecerValidator.Validate(dto);
+            var validacaoParecer = _parecerValidator.Validate(dto);
 
-            if (!validacao.IsValid)
-                return BadRequest(validacao.Errors.Select(e => new { e.ErrorMessage }));
+            if (!validacaoParecer.IsValid)
+                return BadRequest(validacaoParecer.Errors.Select(e => new { e.ErrorMessage }));
 
             return await ProcessarTarefa(_parecerService.Adicionar(dto), false);
         }
@@ -193,10 +193,10 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<ParecerResponseDTO>> AtualizarParecer(int idParecer, ParecerRequestDTO dto)
         {
-           var validacao = _parecerValidator.Validate(dto);
+           var validacaoParecer = _parecerValidator.Validate(dto);
            
-           if (!validacao.IsValid)
-              return BadRequest(validacao.Errors.Select(e => new { e.ErrorMessage }));
+           if (!validacaoParecer.IsValid)
+              return BadRequest(validacaoParecer.Errors.Select(e => new { e.ErrorMessage }));
 
             return await ProcessarTarefa(_parecerService.Atualizar(idParecer, dto));
         }
