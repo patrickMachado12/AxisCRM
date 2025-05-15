@@ -16,5 +16,6 @@ namespace AxisCRM.Api.Domain.Models
         public Cliente Cliente { get; set; }
         public int IdUsuario { get; set; }
         public Usuario Usuario { get; set; }
+        public virtual ICollection<Parecer> Pareceres { get; set; } = new List<Parecer>();
     }
 }

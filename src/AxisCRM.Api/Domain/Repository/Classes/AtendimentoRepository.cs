@@ -48,19 +48,32 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<IEnumerable<Atendimento>> ObterAsync()
         {
-            return await _contexto.Atendimento.AsNoTracking()
-													.OrderBy(u => u.Id)
-													.ToListAsync();
+            return await _contexto.Atendimento
+                .AsNoTracking()
+                .Include(a => a.Cliente)
+                .Include(a => a.Usuario)
+                .Include(a => a.Pareceres)
+                .ThenInclude(p => p.Usuario)
+                .OrderBy(u => u.Id)
+                .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Atendimento> Atendimentos, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
+        public async Task<(IEnumerable<Atendimento> Atendimentos, int TotalItens)> ObterPaginadoAsync(
+            int pagina, 
+            int tamanhoPagina
+        )
         {
-            var query = _contexto.Atendimento.AsQueryable();
+            var query = _contexto.Atendimento
+                .AsNoTracking()
+                .Include(a => a.Cliente)
+                .Include(a => a.Usuario)
+                .Include(a => a.Pareceres)
+                    .ThenInclude(p => p.Usuario);
+
             var totalItens = await query.CountAsync();
 
-            query = query.OrderBy(u => u.Id);
-
             var atendimentos = await query
+                .OrderBy(u => u.Id)
                 .Skip((pagina - 1) * tamanhoPagina)
                 .Take(tamanhoPagina)
                 .ToListAsync();
@@ -70,8 +83,13 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Atendimento> ObterPorIdAsync(int id)
         {
-            return await _contexto.Atendimento.Where(u => u.Id == id)
-                                                    .FirstOrDefaultAsync();
+            return await _contexto.Atendimento
+                .AsNoTracking()
+                .Include(a => a.Cliente)
+                .Include(a => a.Usuario)
+                .Include(a => a.Pareceres)
+                .ThenInclude(p => p.Usuario)
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
     }
 }

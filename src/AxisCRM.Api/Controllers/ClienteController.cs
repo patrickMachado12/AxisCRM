@@ -33,8 +33,7 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<ClienteResponseDTO>> Adicionar(ClienteRequestDTO dto)
         {
             var validacao = _clienteValidator.Validate(dto);
@@ -53,7 +52,6 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<PaginacaoResponseDTO<ClienteResponseDTO>>> ObterTodos([FromQuery] PaginacaoRequestDTO paginacao)
         {
             return await ProcessarTarefa(_clienteService.ObterTodos(paginacao));
@@ -68,7 +66,6 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ClienteResponseDTO>> ObterPorId(int id)
         {
             return await ProcessarTarefa(_clienteService.ObterPorId(id));
@@ -84,7 +81,6 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ClienteResponseDTO>> Atualizar(int id, ClienteRequestDTO dto)
         {
            var validacao = _clienteValidator.Validate(dto);
@@ -104,7 +100,6 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<ClienteResponseDTO>> Excluir(int id)
         {
             var resultado = await ProcessarTarefa(_clienteService.Excluir(id));

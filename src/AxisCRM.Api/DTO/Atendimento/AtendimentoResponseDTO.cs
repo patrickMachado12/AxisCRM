@@ -12,6 +12,7 @@ namespace AxisCRM.Api.DTO.Atendimento
         public string Assunto { get; set; }
         public DateTime DataCadastro { get; set; }
         public string Descricao { get; set; }
+        public List<ParecerResponseDTO> Pareceres { get; set; } = new();
         public int IdCliente { get; set; }
         public DateTime DataUltimaAtualizacao { get; set; }
         public int IdUsuario { get; set; }

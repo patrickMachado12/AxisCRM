@@ -13,7 +13,9 @@ namespace AxisCRM.Api.AutoMapper
         public AtendimentoProfile()
         {
             CreateMap<AtendimentoRequestDTO, Atendimento>();
-            CreateMap<Atendimento, AtendimentoResponseDTO>();
+            CreateMap<Atendimento, AtendimentoResponseDTO>()
+                .ForMember(dest => dest.Pareceres,
+                        opt  => opt.MapFrom(src => src.Pareceres));
         }
 
     }

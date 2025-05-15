@@ -60,7 +60,7 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UsuarioResponseDTO>> Adicionar(UsuarioRequestDTO dto)
         {

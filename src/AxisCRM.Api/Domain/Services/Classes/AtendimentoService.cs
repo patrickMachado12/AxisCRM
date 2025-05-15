@@ -16,16 +16,20 @@ namespace AxisCRM.Api.Domain.Services.Classes
     {
         private const int TAMANO_MAXIMO_PAGINA = 100;
         private readonly IAtendimentoRepository _atendimentoRepository;
+        private readonly IParecerService _parecerService;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IClienteRepository _clienteRepository;
         private readonly IMapper _mapper;
 
-        public AtendimentoService(IAtendimentoRepository atendimentoRepository,
+        public AtendimentoService(
+            IAtendimentoRepository atendimentoRepository,
+            IParecerService parecerService,
             IUsuarioRepository usuarioRepository,
             IClienteRepository clienteRepository,
             IMapper mapper)
         {
             _atendimentoRepository = atendimentoRepository;
+            _parecerService = parecerService;
             _usuarioRepository = usuarioRepository;
             _clienteRepository = clienteRepository;
             _mapper = mapper;
@@ -35,15 +39,23 @@ namespace AxisCRM.Api.Domain.Services.Classes
         {
             if (await _usuarioRepository.ObterPorIdAsync(entidade.IdUsuario) == null)
                 throw new BadRequestException($"Usuário não encontrado com id {entidade.IdUsuario}");
-            
+
             if (await _clienteRepository.ObterPorIdAsync(entidade.IdCliente) == null)
                 throw new BadRequestException($"Usuário não encontrado com id {entidade.IdCliente}");
 
             var entity = _mapper.Map<Atendimento>(entidade);
             entity.DataCadastro = DateTime.Now;
             entity.DataUltimaAtualizacao = DateTime.Now;
-
             await _atendimentoRepository.AdicionarAsync(entity);
+
+            var responseDto = _mapper.Map<AtendimentoResponseDTO>(entity);
+
+            if (entidade.Parecer != null)
+            {
+                entidade.Parecer.IdAtendimento = entity.Id;
+                var parecerCriado = await _parecerService.Adicionar(entidade.Parecer);
+                responseDto.Pareceres.Add(parecerCriado);
+            }
 
             return _mapper.Map<AtendimentoResponseDTO>(entity);
         }
@@ -66,12 +78,12 @@ namespace AxisCRM.Api.Domain.Services.Classes
             var atendimento = await _atendimentoRepository.ObterPorIdAsync(id)
                 ?? throw new NotFoundException($"Atendimento (ID {id}) não encontrado para exclusão.");
 
-            if (atendimento.StatusEncerrado)
-                throw new BadRequestException("Atendimento ja se encontra excluído.");
+            if (atendimento.StatusEncerrado == true)
+                throw new BadRequestException("Atendimento já encontra-se encerrado.");
 
             atendimento.StatusEncerrado = true;
-            atendimento.DataEncerramento = DateTime.Now;   
-            
+            atendimento.DataEncerramento = DateTime.Now;
+
             await _atendimentoRepository.AtualizarAsync(atendimento);
 
             return _mapper.Map<AtendimentoResponseDTO>(atendimento);
@@ -80,8 +92,8 @@ namespace AxisCRM.Api.Domain.Services.Classes
         public async Task<AtendimentoResponseDTO> ObterPorId(int id)
         {
             var atendimento = await _atendimentoRepository.ObterPorIdAsync(id)
-                ?? throw new NotFoundException("Atendimento não encontrado.");
-                
+                ?? throw new NotFoundException($"Atendimento {id} não foi encontrado");
+
             return _mapper.Map<AtendimentoResponseDTO>(atendimento);
         }
 
@@ -99,10 +111,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             return new PaginacaoResponseDTO<AtendimentoResponseDTO>
             {
-                Itens        = atendimentosDTO,
-                TotalItens   = totalItens,
-                PaginaAtual  = paginacao.Pagina,
-                TamanhoPagina= tamanhoValido,
+                Itens = atendimentosDTO,
+                TotalItens = totalItens,
+                PaginaAtual = paginacao.Pagina,
+                TamanhoPagina = tamanhoValido,
                 TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
             };
         }

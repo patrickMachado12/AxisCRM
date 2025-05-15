@@ -25,6 +25,13 @@ namespace AxisCRM.Api.Data
             modelBuilder.ApplyConfiguration(new ClienteMap());
             modelBuilder.ApplyConfiguration(new AtendimentoMap());
             modelBuilder.ApplyConfiguration(new ParecerMap());
+
+            modelBuilder.Entity<Parecer>()
+                .HasOne(p => p.Atendimento)
+                .WithMany(a => a.Pareceres)
+                .HasForeignKey(p => p.IdAtendimento);
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
