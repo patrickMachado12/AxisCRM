@@ -14,6 +14,9 @@ namespace AxisCRM.Api.AutoMapper
         {
             CreateMap<ParecerRequestDTO, Parecer>();
             CreateMap<Parecer, ParecerResponseDTO>();
+            CreateMap<ParecerEdicaoRequestDTO, Parecer>()
+                .ForMember(dest => dest.IdAtendimento, opt => opt.Ignore())
+                .ForMember(dest => dest.IdUsuario,    opt => opt.Ignore()); 
         }
     }
 }

@@ -58,7 +58,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                 .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Atendimento> Atendimentos, int TotalItens)> ObterPaginadoAsync(
+        public async Task<(IEnumerable<Atendimento> entidades, int TotalItens)> ObterPaginadoAsync(
             int pagina, 
             int tamanhoPagina
         )

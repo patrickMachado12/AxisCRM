@@ -53,7 +53,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                                                     .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Parecer> Pareceres, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
+        public async Task<(IEnumerable<Parecer> entidades, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
         {
             var query = _contexto.Parecer.AsQueryable();
             var totalItens = await query.CountAsync();

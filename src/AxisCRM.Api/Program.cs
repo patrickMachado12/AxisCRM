@@ -62,9 +62,11 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddTransient<IAtendimentoRepository, AtendimentoRepository>()
     .AddTransient<IAtendimentoService, AtendimentoService>()
     .AddTransient<AtendimentoValidador>()
+    .AddTransient<AtendimentoEdicaoValidador>()
     .AddTransient<IParecerRepository, ParecerRepository>()
     .AddTransient<IParecerService, ParecerService>()
-    .AddTransient<ParecerValidador>();
+    .AddTransient<ParecerValidador>()
+    .AddTransient<ParecerEdicaoValidador>();
 }
 
 static void ConfigurarServices(WebApplicationBuilder builder)

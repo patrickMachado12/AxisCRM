@@ -13,6 +13,6 @@ namespace AxisCRM.Api.DTO.Parecer
         public string PessoaContato { get; set; }
         public int IdAtendimento { get; set; }
         public int IdUsuario { get; set; }
-        public DateTime DataUltimaAlteracao { get; set; }
+        public DateTime? DataUltimaAlteracao { get; set; }
     }
 }

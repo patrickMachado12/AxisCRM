@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.DTO;
@@ -19,19 +20,25 @@ namespace AxisCRM.Api.Controllers
     {
         private readonly IAtendimentoService _atendimentoService;
         private readonly IValidator<AtendimentoRequestDTO> _atendimentoValidator;
+        private readonly IValidator<AtendimentoEdicaoRequestDTO> _atendimentoEdicaoValidator;
         private readonly IParecerService _parecerService;
         private readonly IValidator<ParecerRequestDTO> _parecerValidator;
+        private readonly IValidator<ParecerEdicaoRequestDTO> _parecerEdicaoValidator;
 
         public AtendimentoController(
-            IAtendimentoService atendimentoService, 
+            IAtendimentoService atendimentoService,
             IValidator<AtendimentoRequestDTO> atendimentoValidator,
-            IParecerService parecerService, 
-            IValidator<ParecerRequestDTO> parecerValidator)
+            IValidator<AtendimentoEdicaoRequestDTO> atendimentoEdicaoValidator,
+            IParecerService parecerService,
+            IValidator<ParecerRequestDTO> parecerValidator,
+            IValidator<ParecerEdicaoRequestDTO> parecerEdicaoValidator)
         {
             _atendimentoService = atendimentoService;
             _atendimentoValidator = atendimentoValidator;
+            _atendimentoEdicaoValidator = atendimentoEdicaoValidator;
             _parecerService = parecerService;
             _parecerValidator = parecerValidator;
+            _parecerEdicaoValidator = parecerEdicaoValidator;
         }
 
         #region Atendimento
@@ -46,6 +53,8 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AtendimentoResponseDTO>> AdicionarAtendimento(AtendimentoRequestDTO dto)
         {
+            var idUsuario = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            dto.IdUsuario = Convert.ToInt32(idUsuario);
             var validacaoAtendimento = _atendimentoValidator.Validate(dto);
 
             if (!validacaoAtendimento.IsValid)
@@ -62,7 +71,7 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PaginacaoResponseDTO<AtendimentoResponseDTO>>> ObterTodos([FromQuery] PaginacaoRequestDTO paginacao)
+        public async Task<ActionResult<PaginacaoResponseDTO<AtendimentoResponseDTO>>> ObterListaAtendimentos([FromQuery] PaginacaoRequestDTO paginacao)
         {
             return await ProcessarTarefa(_atendimentoService.ObterTodos(paginacao));
         }
@@ -85,20 +94,27 @@ namespace AxisCRM.Api.Controllers
         [Authorize]
         [Route("{idAtendimento}")]
         [SwaggerOperation(
-            Summary = "Atualiza um atendimento existente.", 
+            Summary = "Atualiza um atendimento existente.",
             Description = "Este endpoint atualiza os dados de um atendimento existente no sistema."
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AtendimentoResponseDTO>> Atualizar(int idAtendimento, AtendimentoRequestDTO dto)
+        public async Task<ActionResult<AtendimentoResponseDTO>> AtualizarAtendimento(
+            [FromRoute] int idAtendimento,
+            [FromBody] AtendimentoEdicaoRequestDTO dto
+        )
         {
-           var validacaoAtendimento = _atendimentoValidator.Validate(dto);
-           
-           if (!validacaoAtendimento.IsValid)
-              return BadRequest(validacaoAtendimento.Errors.Select(e => new { e.ErrorMessage }));
+            // var idUsuario = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            // dto.IdUsuario = Convert.ToInt32(idUsuario);
+            var validacaoEdicaoAtendimento = _atendimentoEdicaoValidator.Validate(dto);
 
-            return await ProcessarTarefa(_atendimentoService.Atualizar(idAtendimento, dto));
+            if (!validacaoEdicaoAtendimento.IsValid)
+                return BadRequest(validacaoEdicaoAtendimento.Errors.Select(e => new { e.ErrorMessage }));
+
+            return await ProcessarTarefa(_atendimentoService.AtualizarAtendimento(idAtendimento, dto));
+            // Implementar um tratamento de dados para não permitir atualizar um atendimento que esteja encerrado.
+            // Só deve ser possível atualizar um atendimento que esteja Aberto ou Reaberto.
         }
 
         //Mudar para um atualizar e criar outro endpoint para reabrir o atendimento.
@@ -106,14 +122,15 @@ namespace AxisCRM.Api.Controllers
         [Authorize]
         [Route("{idAtendimento}")]
         [SwaggerOperation(
-            Summary = "Finaliza um atendimento.", 
+            Summary = "Altera o status de um atendimento.",
             Description = "Este endpoint finaliza um atendimento no sistema."
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AtendimentoResponseDTO>> Finalizar(int idAtendimento)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AtendimentoResponseDTO>> AlterarStatus(int idAtendimento, AtendimentoEdicaoStatusRequestDTO dto)
         {
-            var resultado = await ProcessarTarefa(_atendimentoService.Excluir(idAtendimento));
+            var resultado = await ProcessarTarefa(_atendimentoService.AlterarStatus(idAtendimento, dto));
 
             if (resultado.Result is ObjectResult erro &&
                 erro.StatusCode != StatusCodes.Status200OK)
@@ -142,6 +159,9 @@ namespace AxisCRM.Api.Controllers
             [FromBody] ParecerRequestDTO dto)
         {
             dto.IdAtendimento = idAtendimento;
+            
+            var idUsuario = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            dto.IdUsuario = Convert.ToInt32(idUsuario);
 
             var validacaoParecer = _parecerValidator.Validate(dto);
 
@@ -153,19 +173,19 @@ namespace AxisCRM.Api.Controllers
 
         // Não sei se preciso de um método de listar todos os pareceres. Ele eu não devo utilizar. 
         // para que eu vou precisar listar todos os pareceres?
-        [HttpGet("pareceres")]
-        [Authorize]
-        [SwaggerOperation(
-            Summary = "Obtém uma lista de parecers.", 
-            Description = "Este endpoint lista todos os parecers cadastrados no sistema."
-        )]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PaginacaoResponseDTO<ParecerResponseDTO>>> ObterListaPareceres(
-            [FromQuery] PaginacaoRequestDTO paginacao)
-        {
-            return await ProcessarTarefa(_parecerService.ObterTodos(paginacao));
-        }
+        // [HttpGet("pareceres")]
+        // [Authorize]
+        // [SwaggerOperation(
+        //     Summary = "Obtém uma lista de parecers.", 
+        //     Description = "Este endpoint lista todos os parecers cadastrados no sistema."
+        // )]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status404NotFound)]
+        // public async Task<ActionResult<PaginacaoResponseDTO<ParecerResponseDTO>>> ObterListaPareceres(
+        //     [FromQuery] PaginacaoRequestDTO paginacao)
+        // {
+        //     return await ProcessarTarefa(_parecerService.ObterTodos(paginacao));
+        // }
 
         [HttpGet]
         [Authorize]
@@ -183,7 +203,7 @@ namespace AxisCRM.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        [Route("/pareceres/{idParecer}")]
+        [Route("{idAtendimento}/pareceres/{idParecer}")]
         [SwaggerOperation(
             Summary = "Atualiza um parecer existente.", 
             Description = "Este endpoint atualiza os dados de um parecer existente no sistema."
@@ -191,14 +211,17 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ParecerResponseDTO>> AtualizarParecer(int idParecer, ParecerRequestDTO dto)
+        public async Task<ActionResult<ParecerResponseDTO>> AtualizarParecer(
+            [FromRoute] int idAtendimento,
+            [FromRoute] int idParecer,
+            [FromBody] ParecerEdicaoRequestDTO dto)
         {
-           var validacaoParecer = _parecerValidator.Validate(dto);
-           
-           if (!validacaoParecer.IsValid)
-              return BadRequest(validacaoParecer.Errors.Select(e => new { e.ErrorMessage }));
+            var validacaoEdicaoParecer = _parecerEdicaoValidator.Validate(dto);
+            
+            if (!validacaoEdicaoParecer.IsValid)
+                return BadRequest(validacaoEdicaoParecer.Errors.Select(e => new { e.ErrorMessage }));
 
-            return await ProcessarTarefa(_parecerService.Atualizar(idParecer, dto));
+                return await ProcessarTarefa(_parecerService.AtualizarParecer(idParecer, idAtendimento, dto));
         }
 
         #endregion

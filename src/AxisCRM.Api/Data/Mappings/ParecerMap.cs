@@ -32,8 +32,7 @@ namespace AxisCRM.Api.Data.Mappings
                 .HasMaxLength(20);
             
             builder.Property(p => p.DataUltimaAlteracao)
-                .HasColumnType("timestamp")
-                .IsRequired();
+                .HasColumnType("timestamp");
 
             builder.HasOne(p => p.Atendimento)
                 .WithMany()

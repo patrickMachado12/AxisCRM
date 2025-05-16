@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AxisCRM.Api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250513232551_CriarEntidadeParecer")]
-    partial class CriarEntidadeParecer
+    [Migration("20250516002911_CriarEntidadeAtendimento")]
+    partial class CriarEntidadeAtendimento
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,13 +44,12 @@ namespace AxisCRM.Api.Migrations
                     b.Property<DateTime?>("DataEncerramento")
                         .HasColumnType("timestamp");
 
-                    b.Property<DateTime>("DataUltimaAtualizacao")
+                    b.Property<DateTime?>("DataUltimaAtualizacao")
                         .HasColumnType("timestamp");
 
-                    b.Property<string>("Descricao")
+                    b.Property<string>("Historico")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("text");
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("integer");
@@ -58,10 +57,8 @@ namespace AxisCRM.Api.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("StatusEncerrado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -138,7 +135,7 @@ namespace AxisCRM.Api.Migrations
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("timestamp");
 
-                    b.Property<DateTime>("DataUltimaAlteracao")
+                    b.Property<DateTime?>("DataUltimaAlteracao")
                         .HasColumnType("timestamp");
 
                     b.Property<string>("Descricao")
@@ -227,7 +224,7 @@ namespace AxisCRM.Api.Migrations
             modelBuilder.Entity("AxisCRM.Api.Domain.Models.Parecer", b =>
                 {
                     b.HasOne("AxisCRM.Api.Domain.Models.Atendimento", "Atendimento")
-                        .WithMany()
+                        .WithMany("Pareceres")
                         .HasForeignKey("IdAtendimento")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -241,6 +238,11 @@ namespace AxisCRM.Api.Migrations
                     b.Navigation("Atendimento");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Atendimento", b =>
+                {
+                    b.Navigation("Pareceres");
                 });
 #pragma warning restore 612, 618
         }

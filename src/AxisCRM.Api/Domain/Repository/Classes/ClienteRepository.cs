@@ -53,7 +53,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                                                     .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Cliente> Clientes, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
+        public async Task<(IEnumerable<Cliente> entidades, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
         {
             var query = _contexto.Cliente.AsQueryable();
             var totalItens = await query.CountAsync();

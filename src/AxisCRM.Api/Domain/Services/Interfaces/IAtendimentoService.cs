@@ -8,6 +8,7 @@ namespace AxisCRM.Api.Domain.Services.Interfaces
 {
     public interface IAtendimentoService : IService<AtendimentoRequestDTO, AtendimentoResponseDTO, int>
     {
-        
+        Task<AtendimentoResponseDTO> AlterarStatus(int id, AtendimentoEdicaoStatusRequestDTO RequestDTO);
+        Task<AtendimentoResponseDTO> AtualizarAtendimento(int idAtendimento, AtendimentoEdicaoRequestDTO entidade); 
     }
 }

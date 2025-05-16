@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AxisCRM.Api.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250513214853_CriarEntidadeAtendimento")]
-    partial class CriarEntidadeAtendimento
+    [Migration("20250516002856_CriarEntidadeCliente")]
+    partial class CriarEntidadeCliente
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,13 +44,12 @@ namespace AxisCRM.Api.Migrations
                     b.Property<DateTime?>("DataEncerramento")
                         .HasColumnType("timestamp");
 
-                    b.Property<DateTime>("DataUltimaAtualizacao")
+                    b.Property<DateTime?>("DataUltimaAtualizacao")
                         .HasColumnType("timestamp");
 
-                    b.Property<string>("Descricao")
+                    b.Property<string>("Historico")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("text");
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("integer");
@@ -58,10 +57,8 @@ namespace AxisCRM.Api.Migrations
                     b.Property<int>("IdUsuario")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("StatusEncerrado")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -127,6 +124,44 @@ namespace AxisCRM.Api.Migrations
                     b.ToTable("cliente", (string)null);
                 });
 
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Parecer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataUltimaAlteracao")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<int>("IdAtendimento")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PessoaContato")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAtendimento");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("parecer", (string)null);
+                });
+
             modelBuilder.Entity("AxisCRM.Api.Domain.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
@@ -184,6 +219,30 @@ namespace AxisCRM.Api.Migrations
                     b.Navigation("Cliente");
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Parecer", b =>
+                {
+                    b.HasOne("AxisCRM.Api.Domain.Models.Atendimento", "Atendimento")
+                        .WithMany("Pareceres")
+                        .HasForeignKey("IdAtendimento")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AxisCRM.Api.Domain.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Atendimento");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Atendimento", b =>
+                {
+                    b.Navigation("Pareceres");
                 });
 #pragma warning restore 612, 618
         }

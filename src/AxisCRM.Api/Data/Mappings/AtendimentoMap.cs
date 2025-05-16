@@ -23,11 +23,6 @@ namespace AxisCRM.Api.Data.Mappings
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(p => p.Descricao)
-                .HasColumnType("VARCHAR")
-                .IsRequired()
-                .HasMaxLength(250);
-
             builder.Property(p => p.DataCadastro)
                 .HasColumnType("timestamp")
                 .IsRequired();
@@ -35,13 +30,11 @@ namespace AxisCRM.Api.Data.Mappings
             builder.Property(p => p.DataEncerramento)
                 .HasColumnType("timestamp");
 
-            builder.Property(p => p.StatusEncerrado)
-                .IsRequired()
-                .HasDefaultValue(false);
+            builder.Property(p => p.Status)
+                .IsRequired();
 
             builder.Property(p => p.DataUltimaAtualizacao)
-                .HasColumnType("timestamp")
-                .IsRequired();
+                .HasColumnType("timestamp");
 
             builder.HasOne(p => p.Cliente)
                 .WithMany()

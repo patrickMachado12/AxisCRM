@@ -8,9 +8,6 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
 {
     public interface IParecerRepository : IRepository<Parecer, int>
     {
-        Task<(IEnumerable<Parecer> Pareceres, int TotalItens)> ObterPaginadoAsync(
-            int pagina,
-            int tamanhoPagina
-        );
+
     }
 }

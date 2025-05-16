@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Exceptions;
@@ -36,12 +37,11 @@ namespace AxisCRM.Api.Domain.Services.Classes
             if (await _usuarioRepository.ObterPorIdAsync(entidade.IdUsuario) == null)
                 throw new BadRequestException($"Usuário com id {entidade.IdUsuario} não encontrado. Verifique!");
 
-             if (await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento) == null)
+            if (await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento) == null)
                 throw new BadRequestException($"Atendimento com id {entidade.IdAtendimento} não encontrado. Verifique!");
 
             var entity = _mapper.Map<Parecer>(entidade);
             entity.DataCadastro = DateTime.Now;
-            entity.DataUltimaAlteracao = DateTime.Now;
 
             await _parecerRepository.AdicionarAsync(entity);
 
@@ -52,6 +52,33 @@ namespace AxisCRM.Api.Domain.Services.Classes
         {
             var existente = await _parecerRepository.ObterPorIdAsync(id)
                 ?? throw new NotFoundException("Parecer não encontrado para atualização.");
+
+            if (entidade.IdAtendimento != existente.IdAtendimento)
+                throw new BadRequestException("Não é possível alterar o atendimento de um parecer.");
+
+            var atendimento = await _atendimentoRepository.ObterPorIdAsync(existente.IdAtendimento);
+            if (atendimento.Status == StatusAtendimento.Encerrado)
+                throw new InvalidOperationException("Não é permitido editar parecer de um atendimento encerrado.");
+
+            _mapper.Map(entidade, existente);
+            existente.DataUltimaAlteracao = DateTime.Now;
+
+            await _parecerRepository.AtualizarAsync(existente);
+
+            return _mapper.Map<ParecerResponseDTO>(existente);
+        }
+
+        public async Task<ParecerResponseDTO> AtualizarParecer(int idParecer, int idAtendimento, ParecerEdicaoRequestDTO entidade)
+        {
+            var existente = await _parecerRepository.ObterPorIdAsync(idParecer)
+                ?? throw new NotFoundException("Parecer não encontrado para atualização.");
+
+            if (existente.IdAtendimento != idAtendimento)
+                throw new BadRequestException("O parecer não pertence a este atendimento.");
+
+            var atendimento = await _atendimentoRepository.ObterPorIdAsync(existente.IdAtendimento);
+            if (atendimento.Status == StatusAtendimento.Encerrado)
+                throw new InvalidOperationException("Não é permitido editar parecer de um atendimento encerrado.");
 
             _mapper.Map(entidade, existente);
             existente.DataUltimaAlteracao = DateTime.Now;
@@ -64,13 +91,14 @@ namespace AxisCRM.Api.Domain.Services.Classes
         public async Task<ParecerResponseDTO> Excluir(int id)
         {
             throw new NotImplementedException();
+            // Verificar para remover esse cara depois.
         }
 
         public async Task<ParecerResponseDTO> ObterPorId(int id)
         {
             var parecer = await _parecerRepository.ObterPorIdAsync(id)
                 ?? throw new NotFoundException("Parecer não encontrado.");
-                
+
             return _mapper.Map<ParecerResponseDTO>(parecer);
         }
 
@@ -88,10 +116,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             return new PaginacaoResponseDTO<ParecerResponseDTO>
             {
-                Itens        = pareceresDTO,
-                TotalItens   = totalItens,
-                PaginaAtual  = paginacao.Pagina,
-                TamanhoPagina= tamanhoValido,
+                Itens = pareceresDTO,
+                TotalItens = totalItens,
+                PaginaAtual = paginacao.Pagina,
+                TamanhoPagina = tamanhoValido,
                 TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
             };
         }

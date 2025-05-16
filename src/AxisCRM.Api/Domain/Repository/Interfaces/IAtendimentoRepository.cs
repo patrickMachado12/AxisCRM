@@ -8,9 +8,6 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
 {
     public interface IAtendimentoRepository : IRepository<Atendimento, int>
     {
-        Task<(IEnumerable<Atendimento> Atendimentos, int TotalItens)> ObterPaginadoAsync(
-            int pagina,
-            int tamanhoPagina
-        );
+
     }
 }

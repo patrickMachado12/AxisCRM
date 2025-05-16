@@ -9,9 +9,6 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
     public interface IClienteRepository : IRepository<Cliente, int>
     {
         Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj);
-        Task<(IEnumerable<Cliente> Clientes, int TotalItens)> ObterPaginadoAsync(
-            int pagina,
-            int tamanhoPagina
-        );
+
     }
 }
