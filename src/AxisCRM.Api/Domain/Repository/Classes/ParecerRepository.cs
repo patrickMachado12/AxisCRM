@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AxisCRM.Api.Data;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
+using AxisCRM.Api.Domain.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AxisCRM.Api.Domain.Repository.Classes
@@ -15,7 +16,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public ParecerRepository(ApplicationContext context)
         {
-            _contexto = context;
+            _contexto = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Parecer> AdicionarAsync(Parecer entidade)
@@ -28,13 +29,13 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Parecer> AtualizarAsync(Parecer entidade)
         {
-            Parecer? entidadeBanco = await _contexto.Parecer
-                                                        .Where(u => u.Id == entidade.Id)
-                                                        .FirstOrDefaultAsync();
+            var entidadeBanco = await _contexto.Parecer
+                .FirstOrDefaultAsync(u => u.Id == entidade.Id);
+
+            if (entidadeBanco is null)
+                throw new NotFoundException($"Parecer com id {entidade.Id} não foi encontrado.");
 
             _contexto.Entry(entidadeBanco).CurrentValues.SetValues(entidade);
-            _contexto.Update<Parecer>(entidadeBanco);
-
             await _contexto.SaveChangesAsync();
 
             return entidadeBanco;
@@ -70,8 +71,12 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Parecer> ObterPorIdAsync(int id)
         {
-            return await _contexto.Parecer.Where(u => u.Id == id)
-                                                    .FirstOrDefaultAsync();
+            var parecer = await _contexto.Parecer.Where(u => u.Id == id)
+                                                .FirstOrDefaultAsync();
+            if (parecer is null)
+                throw new NotFoundException($"Parecer com id {id} não foi encontrado.");
+
+            return parecer;
         }
     }
 }

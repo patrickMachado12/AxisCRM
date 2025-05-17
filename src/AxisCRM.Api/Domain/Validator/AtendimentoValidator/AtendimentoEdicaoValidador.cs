@@ -7,14 +7,15 @@ using FluentValidation;
 
 namespace AxisCRM.Api.Domain.Validator.AtendimentoValidator
 {
-    public class AtendimentoEdicaoValidador : AbstractValidator<AtendimentoRequestDTO>
+    public class AtendimentoEdicaoValidador : AbstractValidator<AtendimentoEdicaoRequestDTO>
     {
         public AtendimentoEdicaoValidador()
         {
-            RuleFor(x => x.Assunto)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().WithMessage("O assunto não pode ser vazio.")
-                .NotNull().WithMessage("O assunto não pode ser nulo.");
+            RuleFor(x => x)
+                .Must(dto =>
+                    !string.IsNullOrWhiteSpace(dto.Assunto) 
+                    || dto.IdCliente.HasValue)
+                .WithMessage("Informe ao menos o Assunto ou o Cliente para atualizar o atendimento.");
         }
     }
 }

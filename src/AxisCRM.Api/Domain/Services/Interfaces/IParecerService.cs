@@ -6,8 +6,10 @@ using AxisCRM.Api.DTO.Parecer;
 
 namespace AxisCRM.Api.Domain.Services.Interfaces
 {
-    public interface IParecerService : IService<ParecerRequestDTO, ParecerResponseDTO, int>
+    public interface IParecerService
     {
-        Task<ParecerResponseDTO> AtualizarParecer(int idParecer, int idAtendimento, ParecerEdicaoRequestDTO entidade);
+        Task<ParecerResponseDTO> AdicionarParecer(ParecerRequestDTO entidade);
+        Task<ParecerResponseDTO> AtualizarParecer(int idAtendimento, int idParecer, ParecerEdicaoRequestDTO entidade);
+        Task<ParecerResponseDTO> ObterParecerPorId(int idAtendimento, int idParecer);
     }
 }

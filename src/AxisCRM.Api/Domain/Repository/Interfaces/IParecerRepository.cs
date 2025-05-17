@@ -8,6 +8,6 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
 {
     public interface IParecerRepository : IRepository<Parecer, int>
     {
-
+        //TODO: Verificar para remover essa interface de repository.
     }
 }

@@ -12,7 +12,7 @@ namespace AxisCRM.Api.Controllers
         /// </summary>
         /// <typeparam name="T">Tipo do objeto de retorno</typeparam>
         /// <param name="tarefa">Task que deve ser executada.</param>
-        /// <param name="isNovoCadastro">Indica se representa uma criação de recurso.</param>
+        /// <param name="isNovoCadastro">Indica se representa uma criação de recurso ou não.</param>
         /// <returns>ActionResult com o resultado ou erro correspondente.</returns>
         protected async Task<ActionResult<T>> ProcessarTarefa<T>(Task<T> tarefa, bool isNovoCadastro = false)
         {
@@ -27,6 +27,10 @@ namespace AxisCRM.Api.Controllers
                 return NotFound(new ModelErrorDTO("Not Found", 404, ex.Message));
             }
             catch (BadRequestException ex)
+            {
+                return BadRequest(new ModelErrorDTO("Bad Request", 400, ex.Message));
+            }
+            catch (ArgumentException ex)
             {
                 return BadRequest(new ModelErrorDTO("Bad Request", 400, ex.Message));
             }

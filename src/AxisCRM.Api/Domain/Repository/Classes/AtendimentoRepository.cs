@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AxisCRM.Api.Data;
+using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
+using AxisCRM.Api.Domain.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AxisCRM.Api.Domain.Repository.Classes
@@ -15,7 +17,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
         
 		public AtendimentoRepository(ApplicationContext context)
 		{
-			_contexto = context;
+			_contexto = context ?? throw new ArgumentNullException(nameof(context));
 		}
 
         public async Task<Atendimento> AdicionarAsync(Atendimento entidade)
@@ -28,13 +30,13 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Atendimento> AtualizarAsync(Atendimento entidade)
         {
-            Atendimento? entidadeBanco = await _contexto.Atendimento
-                                                        .Where(u => u.Id == entidade.Id)
-                                                        .FirstOrDefaultAsync();
+            var entidadeBanco = await _contexto.Atendimento
+                .FirstOrDefaultAsync(u => u.Id == entidade.Id);
+
+            if (entidadeBanco is null)
+                throw new NotFoundException($"Atendimento com id {entidade.Id} não foi encontrado.");
 
             _contexto.Entry(entidadeBanco).CurrentValues.SetValues(entidade);
-            _contexto.Update<Atendimento>(entidadeBanco);
-
             await _contexto.SaveChangesAsync();
 
             return entidadeBanco;
@@ -55,6 +57,30 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                 .Include(a => a.Pareceres)
                 .ThenInclude(p => p.Usuario)
                 .OrderBy(u => u.Id)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Atendimento>> ObterAtendimentosFiltrados(
+            int idUsuario,
+            int idCliente,
+            StatusAtendimento status,
+            DateTime dataInicial,
+            DateTime dataFinal)
+        {
+            return await _contexto.Atendimento
+                .AsNoTracking()
+                .Include(a => a.Cliente)
+                .Include(a => a.Usuario)
+                .Include(a => a.Pareceres)
+                    .ThenInclude(p => p.Usuario)
+                .Where(a =>
+                    a.IdUsuario == idUsuario &&
+                    a.IdCliente == idCliente &&
+                    a.Status == status &&
+                    a.DataCadastro >= dataInicial &&
+                    a.DataCadastro <= dataFinal
+                )
+                .OrderBy(a => a.Id)
                 .ToListAsync();
         }
 
@@ -83,13 +109,18 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Atendimento> ObterPorIdAsync(int id)
         {
-            return await _contexto.Atendimento
+            var atendimento = await _contexto.Atendimento
                 .AsNoTracking()
                 .Include(a => a.Cliente)
                 .Include(a => a.Usuario)
                 .Include(a => a.Pareceres)
-                .ThenInclude(p => p.Usuario)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                    .ThenInclude(p => p.Usuario)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (atendimento is null)
+                throw new NotFoundException($"Atendimento com id {id} não foi encontrado.");
+
+            return atendimento;
         }
     }
 }

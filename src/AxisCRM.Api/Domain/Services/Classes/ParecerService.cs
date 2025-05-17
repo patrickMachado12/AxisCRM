@@ -15,7 +15,6 @@ namespace AxisCRM.Api.Domain.Services.Classes
 {
     public class ParecerService : IParecerService
     {
-        private const int TAMANO_MAXIMO_PAGINA = 100;
         private readonly IParecerRepository _parecerRepository;
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IAtendimentoRepository _atendimentoRepository;
@@ -32,7 +31,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
             _mapper = mapper;
         }
 
-        public async Task<ParecerResponseDTO> Adicionar(ParecerRequestDTO entidade)
+        public async Task<ParecerResponseDTO> AdicionarParecer(ParecerRequestDTO entidade)
         {
             if (await _usuarioRepository.ObterPorIdAsync(entidade.IdUsuario) == null)
                 throw new BadRequestException($"Usuário com id {entidade.IdUsuario} não encontrado. Verifique!");
@@ -48,27 +47,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
             return _mapper.Map<ParecerResponseDTO>(entity);
         }
 
-        public async Task<ParecerResponseDTO> Atualizar(int id, ParecerRequestDTO entidade)
-        {
-            var existente = await _parecerRepository.ObterPorIdAsync(id)
-                ?? throw new NotFoundException("Parecer não encontrado para atualização.");
-
-            if (entidade.IdAtendimento != existente.IdAtendimento)
-                throw new BadRequestException("Não é possível alterar o atendimento de um parecer.");
-
-            var atendimento = await _atendimentoRepository.ObterPorIdAsync(existente.IdAtendimento);
-            if (atendimento.Status == StatusAtendimento.Encerrado)
-                throw new InvalidOperationException("Não é permitido editar parecer de um atendimento encerrado.");
-
-            _mapper.Map(entidade, existente);
-            existente.DataUltimaAlteracao = DateTime.Now;
-
-            await _parecerRepository.AtualizarAsync(existente);
-
-            return _mapper.Map<ParecerResponseDTO>(existente);
-        }
-
-        public async Task<ParecerResponseDTO> AtualizarParecer(int idParecer, int idAtendimento, ParecerEdicaoRequestDTO entidade)
+        public async Task<ParecerResponseDTO> AtualizarParecer( int idAtendimento, int idParecer, ParecerEdicaoRequestDTO entidade)
         {
             var existente = await _parecerRepository.ObterPorIdAsync(idParecer)
                 ?? throw new NotFoundException("Parecer não encontrado para atualização.");
@@ -78,7 +57,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             var atendimento = await _atendimentoRepository.ObterPorIdAsync(existente.IdAtendimento);
             if (atendimento.Status == StatusAtendimento.Encerrado)
-                throw new InvalidOperationException("Não é permitido editar parecer de um atendimento encerrado.");
+                throw new BadRequestException("Não é permitido editar o parecer de um atendimento encerrado.");
 
             _mapper.Map(entidade, existente);
             existente.DataUltimaAlteracao = DateTime.Now;
@@ -88,40 +67,16 @@ namespace AxisCRM.Api.Domain.Services.Classes
             return _mapper.Map<ParecerResponseDTO>(existente);
         }
 
-        public async Task<ParecerResponseDTO> Excluir(int id)
+        public async Task<ParecerResponseDTO> ObterParecerPorId(int idAtendimento, int idParecer)
         {
-            throw new NotImplementedException();
-            // Verificar para remover esse cara depois.
+            var parecer = await _parecerRepository.ObterPorIdAsync(idParecer)
+                ?? throw new NotFoundException("Parecer não encontrado para atualização.");
+
+            if (parecer.IdAtendimento != idAtendimento)
+                throw new BadRequestException("O parecer nao pertence a este atendimento.");
+
+                return _mapper.Map<ParecerResponseDTO>(parecer);
         }
 
-        public async Task<ParecerResponseDTO> ObterPorId(int id)
-        {
-            var parecer = await _parecerRepository.ObterPorIdAsync(id)
-                ?? throw new NotFoundException("Parecer não encontrado.");
-
-            return _mapper.Map<ParecerResponseDTO>(parecer);
-        }
-
-        public async Task<PaginacaoResponseDTO<ParecerResponseDTO>> ObterTodos(PaginacaoRequestDTO paginacao)
-        {
-            var tamanhoValido = Math.Min(paginacao.TamanhoPagina, TAMANO_MAXIMO_PAGINA);
-
-            (IEnumerable<Parecer> pareceres, int totalItens) =
-                await _parecerRepository.ObterPaginadoAsync(
-                    paginacao.Pagina,
-                    paginacao.TamanhoPagina
-                );
-
-            var pareceresDTO = _mapper.Map<IEnumerable<ParecerResponseDTO>>(pareceres);
-
-            return new PaginacaoResponseDTO<ParecerResponseDTO>
-            {
-                Itens = pareceresDTO,
-                TotalItens = totalItens,
-                PaginaAtual = paginacao.Pagina,
-                TamanhoPagina = tamanhoValido,
-                TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
-            };
-        }
     }
 }

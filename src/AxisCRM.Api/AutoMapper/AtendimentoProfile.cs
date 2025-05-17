@@ -16,8 +16,13 @@ namespace AxisCRM.Api.AutoMapper
             CreateMap<Atendimento, AtendimentoResponseDTO>()
                 .ForMember(dest => dest.Pareceres,
                         opt => opt.MapFrom(src => src.Pareceres));
-            CreateMap<AtendimentoEdicaoRequestDTO, Parecer>()
-                .ForMember(dest => dest.IdAtendimento, opt => opt.Ignore());
+                        
+            CreateMap<AtendimentoEdicaoRequestDTO, Atendimento>()
+                .ForMember(dest => dest.Pareceres, opt => opt.Ignore())
+                .ForMember(dest => dest.Assunto,
+                       opt => opt.Condition(src => src.Assunto != null))
+                .ForMember(dest => dest.IdCliente,
+                        opt => opt.Condition(src => src.IdCliente != null));
         }
 
     }

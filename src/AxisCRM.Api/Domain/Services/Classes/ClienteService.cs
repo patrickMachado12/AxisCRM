@@ -52,7 +52,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
             var outroComMesmoCpfCnpj = await _clienteRepository.ObterPorCpfCnpjAsync(existente.CpfCnpj);
             RegraNegocio.Validate(
                 (outroComMesmoCpfCnpj == null || outroComMesmoCpfCnpj.Id == existente.Id,
-                "Já existe outro usuário com este e-mail.")            
+                "Já existe um cliente cadastrado com este CPF / CNPJ")            
             );
 
             await _clienteRepository.AtualizarAsync(existente);
@@ -106,10 +106,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             return new PaginacaoResponseDTO<ClienteResponseDTO>
             {
-                Itens        = clientesDTO,
-                TotalItens   = totalItens,
-                PaginaAtual  = paginacao.Pagina,
-                TamanhoPagina= tamanhoValido,
+                Itens = clientesDTO,
+                TotalItens = totalItens,
+                PaginaAtual = paginacao.Pagina,
+                TamanhoPagina = tamanhoValido,
                 TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
             };
         }
