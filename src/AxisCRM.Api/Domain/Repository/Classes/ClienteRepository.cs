@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AxisCRM.Api.Data;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
+using AxisCRM.Api.Domain.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AxisCRM.Api.Domain.Repository.Classes
@@ -15,7 +16,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public ClienteRepository(ApplicationContext context)
         {
-            _contexto = context;
+            _contexto = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public async Task<Cliente> AdicionarAsync(Cliente entidade)
@@ -28,13 +29,13 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Cliente> AtualizarAsync(Cliente entidade)
         {
-            Cliente? entidadeBanco = await _contexto.Cliente
-                                                        .Where(u => u.Id == entidade.Id)
-                                                        .FirstOrDefaultAsync();
+            var entidadeBanco = await _contexto.Cliente
+                .FirstOrDefaultAsync(u => u.Id == entidade.Id);
+
+            if (entidadeBanco is null)
+                throw new NotFoundException($"Cliente com id {entidade.Id} não foi encontrado.");
 
             _contexto.Entry(entidadeBanco).CurrentValues.SetValues(entidade);
-            _contexto.Update<Cliente>(entidadeBanco);
-
             await _contexto.SaveChangesAsync();
 
             return entidadeBanco;
@@ -53,7 +54,7 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                                                     .ToListAsync();
         }
 
-        public async Task<(IEnumerable<Cliente> Clientes, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
+        public async Task<(IEnumerable<Cliente> entidades, int TotalItens)> ObterPaginadoAsync(int pagina, int tamanhoPagina)
         {
             var query = _contexto.Cliente.AsQueryable();
             var totalItens = await query.CountAsync();
@@ -70,15 +71,24 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Cliente> ObterPorIdAsync(int id)
         {
-            return await _contexto.Cliente.Where(u => u.Id == id)
-                                                    .FirstOrDefaultAsync();
+            var cliente = await _contexto.Cliente.Where(u => u.Id == id)
+                                                .FirstOrDefaultAsync();
+            if (cliente is null)
+                throw new NotFoundException($"Cliente com id {id} não foi encontrado.");
+
+            return cliente;                                         
         }
 
         public async Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj)
         {
-            return await _contexto.Cliente.AsNoTracking()
+            var cliente = await _contexto.Cliente.AsNoTracking()
                 .Where(u => u.CpfCnpj == cpfCnpj)
                 .FirstOrDefaultAsync();
+
+            if (cliente is null)
+                throw new NotFoundException($"Cliente com CPF / CNPJ {cpfCnpj} não foi encontrado.");
+
+            return cliente; 
         }
     }
 }

@@ -52,6 +52,12 @@ namespace AxisCRM.Api.Controllers
             return await ProcessarTarefa(_usuarioService.Autenticar(dto), false);
         }
 
+        /// <param name="dto"> 
+        /// Perfis de usuário:
+        ///     1 = Administrador |
+        ///     2 = Padrão |
+        ///     3 = Moderador |
+        /// </param>
         [HttpPost]
         [Authorize(Policy = "Admin")]
         [SwaggerOperation(
@@ -60,7 +66,7 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UsuarioResponseDTO>> Adicionar(UsuarioRequestDTO dto)
         {

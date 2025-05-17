@@ -167,10 +167,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             return new PaginacaoResponseDTO<UsuarioResponseDTO>
             {
-                Itens        = usuariosDTO,
-                TotalItens   = totalItens,
-                PaginaAtual  = paginacao.Pagina,
-                TamanhoPagina= tamanhoValido,
+                Itens = usuariosDTO,
+                TotalItens = totalItens,
+                PaginaAtual = paginacao.Pagina,
+                TamanhoPagina = tamanhoValido,
                 TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
             };
         }

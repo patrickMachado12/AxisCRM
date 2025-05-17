@@ -15,7 +15,11 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
         Task<IEnumerable<T>> ObterAsync();
         Task<T> ObterPorIdAsync(Id id);
         Task<T> AdicionarAsync(T entidade);
-        Task<T> AtualizarAsync(T entidade);        
+        Task<T> AtualizarAsync(T entidade);
         Task ExcluirAsync(T entidade);
+        Task<(IEnumerable<T> entidades, int TotalItens)> ObterPaginadoAsync(
+            int pagina,
+            int tamanhoPagina
+        );
     }
 }

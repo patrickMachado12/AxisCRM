@@ -6,9 +6,8 @@ using AxisCRM.Api.Domain.Models;
 
 namespace AxisCRM.Api.Domain.Repository.Interfaces
 {
-    public interface IClienteRepository : IRepository<Cliente, int>
+    public interface IParecerRepository : IRepository<Parecer, int>
     {
-        Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj);
-
+        //TODO: Verificar para remover essa interface de repository.
     }
 }
