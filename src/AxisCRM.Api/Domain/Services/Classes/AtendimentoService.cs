@@ -120,11 +120,11 @@ namespace AxisCRM.Api.Domain.Services.Classes
         }
 
         public async Task<IEnumerable<AtendimentoResponseDTO>> ObterAtendimentosFiltrados(
-            int idUsuario,
-            int idCliente,
+            int? idUsuario,
+            int? idCliente,
             StatusAtendimento status,
-            DateTime dataInicial,
-            DateTime dataFinal)
+            DateTime? dataInicial,
+            DateTime? dataFinal)
         {
             //TODO: Utilizei uma função chamada "Pattern-matching" que foi implementada no C# 7.
             //TODO: Junto a ela, utilizei uma interpolação para retornar a mensagem de erro ao usuário.

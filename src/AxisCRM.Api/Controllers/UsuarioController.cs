@@ -52,6 +52,12 @@ namespace AxisCRM.Api.Controllers
             return await ProcessarTarefa(_usuarioService.Autenticar(dto), false);
         }
 
+        /// <param name="dto"> 
+        /// Perfis de usuário:
+        ///     1 = Administrador |
+        ///     2 = Padrão |
+        ///     3 = Moderador |
+        /// </param>
         [HttpPost]
         [Authorize(Policy = "Admin")]
         [SwaggerOperation(

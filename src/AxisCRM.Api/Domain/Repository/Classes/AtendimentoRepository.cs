@@ -61,11 +61,11 @@ namespace AxisCRM.Api.Domain.Repository.Classes
         }
 
         public async Task<IEnumerable<Atendimento>> ObterAtendimentosFiltrados(
-            int idUsuario,
-            int idCliente,
+            int? idUsuario,
+            int? idCliente,
             StatusAtendimento status,
-            DateTime dataInicial,
-            DateTime dataFinal)
+            DateTime? dataInicial,
+            DateTime? dataFinal)
         {
             return await _contexto.Atendimento
                 .AsNoTracking()
@@ -74,15 +74,15 @@ namespace AxisCRM.Api.Domain.Repository.Classes
                 .Include(a => a.Pareceres)
                     .ThenInclude(p => p.Usuario)
                 .Where(a =>
-                    a.IdUsuario == idUsuario &&
-                    a.IdCliente == idCliente &&
                     a.Status == status &&
-                    a.DataCadastro >= dataInicial &&
-                    a.DataCadastro <= dataFinal
+                    (!idUsuario.HasValue || a.IdUsuario == idUsuario.Value) &&
+                    (!idCliente.HasValue || a.IdCliente == idCliente.Value) &&
+                    (!dataInicial.HasValue|| a.DataCadastro>= dataInicial.Value) &&
+                    (!dataFinal.HasValue  || a.DataCadastro<= dataFinal.Value)
                 )
                 .OrderBy(a => a.Id)
                 .ToListAsync();
-        }
+                }
 
         public async Task<(IEnumerable<Atendimento> entidades, int TotalItens)> ObterPaginadoAsync(
             int pagina, 

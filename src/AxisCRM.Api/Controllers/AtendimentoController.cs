@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -66,6 +67,16 @@ namespace AxisCRM.Api.Controllers
             return await ProcessarTarefa(_atendimentoService.Adicionar(dto), true);
         }
 
+        /// <summary>
+        /// Obtém uma lista de atendimentos filtrados.
+        /// </summary>
+        /// <param name="status">
+        /// Status do atendimento:
+        /// 
+        /// 1 = Aberto  
+        /// 2 = Encerrado  
+        /// 3 = Reaberto
+        /// </param>
         [HttpGet]
         [Authorize]
         [SwaggerOperation(
@@ -75,11 +86,11 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<IEnumerable<AtendimentoResponseDTO>>> ObterAtendimentosFiltrados(
-            [FromQuery] int idUsuario,
-            int idCliente,
+            [FromQuery] int? idUsuario,
+            int? idCliente,
             StatusAtendimento status,
-            DateTime dataInicial,
-            DateTime dataFinal)
+            DateTime? dataInicial,
+            DateTime? dataFinal)
         {
             return await ProcessarTarefa(_atendimentoService.ObterAtendimentosFiltrados(
                 idUsuario,
@@ -125,15 +136,21 @@ namespace AxisCRM.Api.Controllers
             return await ProcessarTarefa(_atendimentoService.AtualizarAtendimento(idAtendimento, dto));
         }
 
+        /// <param name="dto"> 
+        /// Status do atendimento:
+        ///     1 = Aberto  |
+        ///     2 = Encerrado |
+        ///     3 = Reaberto |
+        /// </param>
         [HttpPatch]
         [Authorize]
         [Route("{idAtendimento}")]
         [SwaggerOperation(
             Summary = "Altera o status de um atendimento.",
-            Description = "Este endpoint finaliza um atendimento no sistema."
+            Description = "Este endpoint altera o status de um atendimento no sistema."
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AtendimentoResponseDTO>> AlterarStatus(int idAtendimento, AtendimentoEdicaoStatusRequestDTO dto)
         {

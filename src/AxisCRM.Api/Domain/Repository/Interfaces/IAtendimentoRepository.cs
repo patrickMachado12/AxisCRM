@@ -10,10 +10,10 @@ namespace AxisCRM.Api.Domain.Repository.Interfaces
     public interface IAtendimentoRepository : IRepository<Atendimento, int>
     {
         Task<IEnumerable<Atendimento>> ObterAtendimentosFiltrados(
-            int idUsuario,
-            int idCliente,
+            int? idUsuario,
+            int? idCliente,
             StatusAtendimento status,
-            DateTime dataInicial,
-            DateTime dataFinal);
+            DateTime? dataInicial,
+            DateTime? dataFinal);
     }
 }

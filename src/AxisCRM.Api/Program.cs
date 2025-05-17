@@ -16,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using AxisCRM.Api.Domain.Validator.ClienteValidator;
 using AxisCRM.Api.Domain.Validator.AtendimentoValidator;
 using AxisCRM.Api.Domain.Validator.ParecerValidator;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +82,11 @@ static void ConfigurarServices(WebApplicationBuilder builder)
 
     builder.Services.AddSwaggerGen(c =>
     {
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+        c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Description = "JTW Authorization header using the Beaerer scheme (Example: 'Bearer 12345abcdef')",

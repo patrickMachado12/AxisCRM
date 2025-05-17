@@ -14,10 +14,10 @@ namespace AxisCRM.Api.Domain.Services.Interfaces
         Task<AtendimentoResponseDTO> AlterarStatus(int id, AtendimentoEdicaoStatusRequestDTO RequestDTO);
         Task<AtendimentoResponseDTO> AtualizarAtendimento(int idAtendimento, AtendimentoEdicaoRequestDTO entidade);
         Task<IEnumerable<AtendimentoResponseDTO>> ObterAtendimentosFiltrados(
-            int idUsuario,
-            int idCliente,
+            int? idUsuario,
+            int? idCliente,
             StatusAtendimento status,
-            DateTime dataInicial,
-            DateTime dataFinal);
+            DateTime? dataInicial,
+            DateTime? dataFinal);
     }
 }
