@@ -44,6 +44,18 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             await _parecerRepository.AdicionarAsync(entity);
 
+            if (entidade.Status.HasValue)
+            {
+                var atendimento = await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento);
+                atendimento.Status = entidade.Status.Value;
+                atendimento.DataUltimaAtualizacao = DateTime.Now;
+
+                if (entidade.Status.Value == StatusAtendimento.Encerrado)
+                    atendimento.DataEncerramento = DateTime.Now;
+
+                await _atendimentoRepository.AtualizarAsync(atendimento);
+            }
+
             return _mapper.Map<ParecerResponseDTO>(entity);
         }
 
