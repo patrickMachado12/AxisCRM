@@ -7,7 +7,6 @@
         <v-img src="@/assets/Logo-menu.png" height="160" contain />
       </v-toolbar-title>
 
-
       <!-- Botão de Dark Mode -->
       <v-btn icon @click="toggleDark">
         <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent' }}</v-icon>
@@ -35,7 +34,7 @@
           <template #activator="{ props }">
             <v-list-item
               v-bind="props"
-              prepend-icon="mdi mdi-card-account-details-outline"
+              prepend-icon="mdi-account-circle"
               variant="plain">            
             CRM
             </v-list-item>
@@ -43,7 +42,7 @@
           <v-list-item 
             @click="navigate('Administrador')" 
             :active="isRoute('Administrador')" 
-            prepend-icon="mdi-account-circle"
+            prepend-icon="mdi mdi-card-account-details-outline"
             variant="plain">
             Administrador
           </v-list-item>

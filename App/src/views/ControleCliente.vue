@@ -101,7 +101,14 @@
             {{ tiposPessoaOptions.find(p => p.value === item.tipoPessoa)?.label }}
           </template>
           <template #item.excluido="{ item }">
-            {{ statusOptions.find(p => p.value === item.excluido)?.label }}
+            <v-chip
+              small
+              :color="!item.excluido ? 'green' : 'red'"
+              text-color="white"
+              class="mr-2"
+            >
+              {{ !item.excluido ? 'Ativo' : 'Excluído' }}
+            </v-chip>
           </template>
           <template #item.dataCadastro="{ item }">
             {{ formatDate(item.dataCadastro) }}
@@ -155,14 +162,10 @@ const statusOptions = [
 const headers = [
   { title: "Código", value: "id", align: "start", sortable: true },
   { title: 'Nome', value: 'nome' },
-  { title: 'Tipo', value: 'tipoPessoa' },
-  { title: 'CPF / CNPJ', value: 'cpfCnpj' },
   { title: 'Telefone', value: 'telefone' },
   { title: 'E-mail', value: 'email' },
-  { title: 'Observação', value: 'observacao' },
   { title: 'Data Cadastro', value: 'dataCadastro' },
   { title: 'Status', value: 'excluido' },
-  { title: 'Data Exclusão', value: 'dataExclusao' },
   { title: 'Ações', value: 'actions', sortable: false }
 ]
 

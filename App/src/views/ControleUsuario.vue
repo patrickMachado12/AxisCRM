@@ -155,7 +155,6 @@ const headers = [
   { title: 'Perfil', value: 'perfil' },
   { title: 'Data Cadastro', value: 'dataCadastro' },
   { title: 'Status', value: 'excluido' },
-  { title: 'Data Exclusão', value: 'dataExclusao' },
   { title: 'Ações', value: 'actions', sortable: false },
 ]
 

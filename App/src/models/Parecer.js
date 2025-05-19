@@ -4,6 +4,7 @@ export default class Parecer {
     descricao = '',
     dataCadastro = null,
     pessoaContato = '',
+    status = 0,
     idAtendimento = 0,
     idUsuario = 0,
     dataUltimaAlteracao = null
@@ -14,6 +15,7 @@ export default class Parecer {
       ? new Date(dataCadastro)
       : null;
     this.pessoaContato = pessoaContato;
+    this.status = status;
     this.idAtendimento = idAtendimento;
     this.idUsuario = idUsuario;
     this.dataUltimaAlteracao = dataUltimaAlteracao

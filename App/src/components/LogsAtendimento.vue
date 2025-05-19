@@ -1,7 +1,5 @@
-<!-- src/components/LogsAtendimento.vue -->
 <template>
   <v-card>
-    <!-- Cabeçalho com botão de fechar -->
     <v-card-title class="d-flex justify-space-between align-center">
       <span>Auditoria Atendimento #{{ atendimentoId }}</span>
       <v-btn icon small @click="$emit('close')">
@@ -21,7 +19,6 @@
       </v-alert>
 
       <div v-else>
-        <!-- para cada linha do histórico, um card -->
         <v-card
           v-for="(entry, idx) in entries"
           :key="idx"
@@ -66,7 +63,6 @@ export default {
       try {
         const data = await atendimentoService.obterAtendimentoPorId(props.atendimentoId)
         historico.value = data.historico || ''
-        // divide por quebras de linha e filtra vazios
         entries.value = historico.value
           .split(/\r?\n/)
           .map(l => l.trim())
@@ -89,5 +85,5 @@ export default {
 </script>
 
 <style scoped>
-/* ajustes finos, se precisar */
+
 </style>
