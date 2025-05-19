@@ -67,14 +67,9 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Usuario> ObterPorEmailAsync(string email)
         {
-            var usuario = await _contexto.Usuario.AsNoTracking()
-                .Where(u => u.Email == email)
-                .FirstOrDefaultAsync();
-
-            if (usuario is null)
-                throw new NotFoundException($"Usuario com e-mail {email} não foi encontrado.");
-
-            return usuario; 
+            return await _contexto.Usuario
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<(IEnumerable<Usuario> entidades, int TotalItens)> ObterPaginadoAsync(

@@ -81,14 +81,9 @@ namespace AxisCRM.Api.Domain.Repository.Classes
 
         public async Task<Cliente> ObterPorCpfCnpjAsync(string cpfCnpj)
         {
-            var cliente = await _contexto.Cliente.AsNoTracking()
-                .Where(u => u.CpfCnpj == cpfCnpj)
-                .FirstOrDefaultAsync();
-
-            if (cliente is null)
-                throw new NotFoundException($"Cliente com CPF / CNPJ {cpfCnpj} não foi encontrado.");
-
-            return cliente; 
+            return await _contexto.Cliente
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(u => u.CpfCnpj == cpfCnpj);
         }
     }
 }
