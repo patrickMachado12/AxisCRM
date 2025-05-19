@@ -85,11 +85,9 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <!-- Filtros e lista de atendimentos -->
       <v-col cols="12" md="9">
         <v-card class="pa-4">
           <v-row align="center" justify="space-between">
-            <!-- Radio buttons de filtro -->
             <v-radio-group
               v-model="filtroStatus"
               row
@@ -98,7 +96,6 @@
               <v-radio label="Abertos" value="abertos" />
               <v-radio label="Encerrados" value="encerrados" />
             </v-radio-group>
-            <!-- Botão de novo atendimento -->
             <v-btn color="primary" @click="novoAtendimento">
               <v-icon left>mdi-plus</v-icon>
               Novo Atendimento
@@ -111,11 +108,9 @@
           <v-row dense>
             <v-col cols="12" v-for="at in atendimentosFiltrados" :key="at.id">
               <v-card class="mb-4" elevation="2" rounded="lg">
-                <!-- Título do card de atendimentos -->
                 <v-card-title class="d-flex justify-space-between">
                   <div>ATENDIMENTO #000{{ at.id }} – {{ at.assunto }}</div>
                   <div class="d-flex align-center">
-                    <!-- Botão de log de alterações -->
                     <v-tooltip bottom>
                       <template #activator="{ on, attrs }">
                         <v-btn
@@ -131,8 +126,6 @@
                       </template>
                       <span>Ver log de alterações</span>
                     </v-tooltip>
-
-                    <!-- Status do atendimento -->
                     <v-chip small :color="at.status === 2 ? 'grey' : 'green'" text-color="white" class="mr-2">
                       {{ at.status === 2 ? 'Encerrado' : 'Em aberto' }}
                     </v-chip>

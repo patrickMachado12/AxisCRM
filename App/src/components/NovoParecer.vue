@@ -1,7 +1,5 @@
-<!-- src/components/ParecerForm.vue -->
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <!-- Exibe o ID do atendimento -->
     <v-row>
       <v-col cols="12" md="4">
         <v-text-field
@@ -11,7 +9,6 @@
           dense
         />
       </v-col>
-      <!-- Exibe o assunto original -->
       <v-col cols="12" md="8">
         <v-text-field
           v-model="atendimento.assunto"
@@ -22,7 +19,6 @@
       </v-col>
     </v-row>
 
-    <!-- Texto do parecer -->
     <v-row>
       <v-col cols="12">
         <v-textarea
@@ -36,7 +32,6 @@
       </v-col>
     </v-row>
 
-    <!-- Pessoa de contato no parecer -->
     <v-row>
       <v-col cols="12" md="6">
         <v-text-field
@@ -48,11 +43,26 @@
         />
       </v-col>
     </v-row>
-
-    <!-- Ações -->
+    <v-row>
+      <v-col cols="12">
+        <v-radio-group
+          v-model="status"
+          row
+          dense
+          :rules="[rules.required]"
+        >
+          <v-radio
+            v-for="opt in statusOptions"
+            :key="opt.value"
+            :label="opt.label"
+            :value="opt.value"
+          />
+        </v-radio-group>
+      </v-col>
+    </v-row>
     <v-row justify="end" class="mt-4">
-      <v-btn text @click="$emit('cancel')">Cancelar</v-btn>
       <v-btn color="primary" @click="onSubmit">Gravar Parecer</v-btn>
+      <v-btn text @click="$emit('cancel')">Cancelar</v-btn>
     </v-row>
   </v-form>
 </template>
@@ -61,25 +71,13 @@
 
 import { ref, reactive, toRefs, onMounted } from 'vue';
 import atendimentoService from '@/services/atendimento-service';
-import * as parecerService from '@/services/parecer-service'; // importa seu service
-
-
+import * as parecerService from '@/services/parecer-service';
 
 export default {
-  // name: 'NovoParecer',
-  // emits: ['saved', 'cancel'],
-  // props: {
-  //   /** ID do atendimento que vamos preencher o parecer */
-  //   atendimentoId: {
-  //     type: [String, Number],
-  //     required: true
-  //   }
-  // },
 
   name: 'NovoParecer',
   emits: ['saved','cancel'],
   props: {
-    /** recebe apenas o id do atendimento para o qual faremos o parecer */
     atendimentoId: {
       type: [String, Number],
       required: true
@@ -88,13 +86,11 @@ export default {
   setup(props, { emit }) {
     const formRef = ref(null);
 
-    // dados do atendimento
     const atendimento = reactive({
       id: props.atendimentoId,
-      assunto: ''
+      assunto: '',
     });
 
-    // estado do form de parecer
     const form = reactive({
       descricao: '',
       pessoaContato: ''
@@ -104,30 +100,45 @@ export default {
       required: v => !!v || 'Campo obrigatório'
     };
 
-    // ao montar, busca o assunto do atendimento
+    const statusOptions = [
+      { label: 'Aberto', value: 'Aberto' },
+      { label: 'Encerrado', value: 'Encerrado' }
+    ];
+
+    const status = ref('Aberto');
+
+    const statusMap = {
+      1: 'Aberto',
+      2: 'Encerrado',
+    };
+
     onMounted(async () => {
       try {
         const data = await atendimentoService.obterAtendimentoPorId(props.atendimentoId);
         atendimento.assunto = data.assunto;
+        status.value = statusMap[data.status] || 'Aberto';
+
+        if (Array.isArray(data.pareceres) && data.pareceres.length > 0) {
+          const ultimoParecer = data.pareceres[data.pareceres.length - 1];
+          form.pessoaContato  = ultimoParecer.pessoaContato || '';
+        }
       } catch (e) {
         console.error('Erro ao carregar atendimento:', e);
       }
     });
 
-    // submete o parecer
     async function onSubmit() {
       const valid = await formRef.value.validate();
       if (!valid) return;
 
+      const payload = {
+        descricao: form.descricao,
+        pessoaContato: form.pessoaContato,
+        status: status.value
+      };
+
       try {
-        // chama seu endpoint: POST /atendimentos/{idAtendimento}/pareceres
-        await parecerService.cadastrar(
-          atendimento.id,
-          {
-            descricao: form.descricao,
-            pessoaContato: form.pessoaContato
-          }
-        );
+        await parecerService.cadastrar(atendimento.id, payload);
         emit('saved');
       } catch (e) {
         console.error('Erro ao gravar parecer:', e);
@@ -136,6 +147,8 @@ export default {
 
     return {
       formRef,
+      status,
+      statusOptions,
       atendimento,
       ...toRefs(form),
       rules,
@@ -146,5 +159,5 @@ export default {
 </script>
 
 <style scoped>
-/* ajustes finos, se necessário */
+
 </style>

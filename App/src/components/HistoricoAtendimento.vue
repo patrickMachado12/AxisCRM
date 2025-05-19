@@ -1,6 +1,5 @@
 <template>
   <v-card>
-    <!-- Cabeçalho com dados do atendimento -->
     <v-card-title>
       Atendimento #{{ atendimento.id }} – {{ atendimento.assunto }}
     </v-card-title>
@@ -12,7 +11,6 @@
     </v-card-subtitle>
     <v-divider/>
 
-    <!-- Mensagem de carregamento / erro -->
     <v-card-text>
       <v-skeleton-loader
         v-if="loading"
@@ -21,17 +19,6 @@
       />
       <v-alert v-else-if="error" type="error">{{ error }}</v-alert>
       <div v-else>
-        <!-- Histórico geral -->
-        <!-- <v-alert
-          v-if="atendimento.historico"
-          type="info"
-          class="mb-4"
-          dense
-        >
-          {{ atendimento.historico }}
-        </v-alert> -->
-
-        <!-- Lista de pareceres em cards -->
         <v-subheader>Pareceres</v-subheader>
         <v-row>
           <v-col cols="12" v-for="p in atendimento.pareceres" :key="p.id">
@@ -111,5 +98,5 @@ export default {
 </script>
 
 <style scoped>
-/* ajustes finos, se necessário */
+
 </style>
