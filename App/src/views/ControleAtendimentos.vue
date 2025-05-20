@@ -3,7 +3,7 @@
     <!-- CARD de Filtros -->
     <v-card class="mb-6">
       <v-card-title>Filtrar Atendimentos</v-card-title>
-      <v-divider/>
+      <v-divider />
       <v-card-text>
         <v-row align="center" dense>
           <!-- Usuário -->
@@ -105,9 +105,7 @@
 
           <!-- Botão Filtrar -->
           <v-col cols="12" class="text-end">
-            <v-btn color="primary" @click="applyFilters">
-              Filtrar
-            </v-btn>
+            <v-btn color="primary" @click="applyFilters"> Filtrar </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
@@ -119,7 +117,7 @@
       <v-col cols="12" md="3">
         <v-card class="mb-6" outlined>
           <v-card-title>Clientes ({{ uniqueClients.length }})</v-card-title>
-          <v-divider/>
+          <v-divider />
           <v-card-text>
             <v-list dense shaped>
               <v-list-item
@@ -133,9 +131,7 @@
                   <v-list-item-title>{{ cl.nome }}</v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item 
-                v-if="!uniqueClients.length"
-              >
+              <v-list-item v-if="!uniqueClients.length">
                 <v-list-item-content>Nenhum cliente</v-list-item-content>
               </v-list-item>
             </v-list>
@@ -162,7 +158,11 @@
               <v-card class="mb-4" elevation="8" rounded="lg">
                 <v-card-title class="d-flex justify-space-between">
                   <div>#{{ att.id }} – {{ att.assunto }}</div>
-                  <v-chip small :color="chipColor(att.status)" text-color="white">
+                  <v-chip
+                    small
+                    :color="chipColor(att.status)"
+                    text-color="white"
+                  >
                     {{ att.status }}
                   </v-chip>
                 </v-card-title>
@@ -173,45 +173,56 @@
                   </div>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ att.historico || 'Nenhum histórico' }}
+                    {{ att.historico || "Nenhum histórico" }}
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-end">
-                  <v-btn 
-                    small 
-                    color="secondary" 
-                    @click="abrirLog(att)"
-                    title="Auditoria"
-                  >
-                    <v-icon left>mdi mdi-file-clock-outline</v-icon>
-                  </v-btn>
-                  <v-btn 
-                    small 
-                    color="secondary" 
-                    @click="viewLog(att)"
-                    title="Editar"
-                  >
-                    <v-icon left>mdi mdi-file-document-edit</v-icon>
-                  </v-btn>
-                  <v-btn 
-                    v-if="att.status !== 2" 
-                    small 
-                    color="secondary" 
+                  <v-btn
+                    v-if="att.status !== 2"
+                    small
+                    color="secondary"
                     @click="abrirParecer(att)"
                     title="Parecer"
                   >
-                    <v-icon left>mdi mdi-pencil</v-icon>
+                    <v-icon left>mdi mdi-chat-plus</v-icon>
                   </v-btn>
-                  <v-btn 
-                    small c
-                    olor="secondary" 
-                    @click="abrirHistorico(att)"
-                    title="Histórico"
-                  >
-                    <v-icon left>mdi-history</v-icon>
-                  </v-btn>
-                  <!-- ... outros botões ... -->
+                  <v-menu offset-y attach="body" location="top">
+                    <template #activator="{ props }">
+                      <v-btn icon v-bind="props">
+                        <v-icon>mdi-dots-vertical</v-icon>
+                      </v-btn>
+                    </template>
 
+                    <v-list dense>
+                      <v-list-item @click="abrirHistorico(att)">
+                        <v-list-item-title
+                          >Histórico do atendimento</v-list-item-title
+                        >
+                      </v-list-item>
+
+                      <v-list-item @click="abrirLog(att)">
+                        <v-list-item-title>Log de alteração</v-list-item-title>
+                      </v-list-item>
+
+                      <v-list-item
+                        v-if="att.status === 1 || att.status === 3"
+                        @click="editarAtendimento(att)"
+                      >
+                        <v-list-item-title
+                          >Editar atendimento</v-list-item-title
+                        >
+                      </v-list-item>
+
+                      <v-list-item
+                        v-if="att.status === 2"
+                        @click="reabrirAtendimento(att)"
+                      >
+                        <v-list-item-title
+                          >Reabrir atendimento</v-list-item-title
+                        >
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
                 </v-card-actions>
               </v-card>
             </v-col>
@@ -229,17 +240,17 @@
         <v-card-title>Novo atendimento</v-card-title>
         <v-divider />
         <v-card-text>
-         <!-- só montamos o form quando o diálogo estiver visível -->
-         <NovoAtendimento
-           v-if="showForm"
-           :initial="{
-             idCliente: idCliente,
-             status: 1,
-             parecer: { descricao: '', pessoaContato: '' }
-           }"
-           @save="handleSave"
-           @cancel="showForm = false"
-         />
+          <!-- só montamos o form quando o diálogo estiver visível -->
+          <NovoAtendimento
+            v-if="showForm"
+            :initial="{
+              idCliente: idCliente,
+              status: 1,
+              parecer: { descricao: '', pessoaContato: '' },
+            }"
+            @save="handleSave"
+            @cancel="showForm = false"
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -279,196 +290,213 @@
 
     <!-- DIALOG: Logs de Alterações -->
     <v-dialog v-model="showLog" max-width="600" persistent>
-     <LogsAtendimento
-       v-if="showLog && selectedAtendimento"
-       :atendimento-id="selectedAtendimento.id"
-       @close="showLog = false"
-     />
+      <LogsAtendimento
+        v-if="showLog && selectedAtendimento"
+        :atendimento-id="selectedAtendimento.id"
+        @close="showLog = false"
+      />
     </v-dialog>
   </v-container>
 </template>
 
 <script>
-import { ref, reactive, computed, onMounted } from 'vue'
-import api                   from '@/services/api'
-import clienteService        from '@/services/cliente-service'
-import usuarioService        from '@/services/usuario-service'
-import CampoData             from '@/components/date/CampoData.vue'
-import NovoAtendimento       from '@/components/NovoAtendimento.vue'
-import NovoParecer           from '@/components/NovoParecer.vue'
-import HistoricoAtendimento  from '@/components/HistoricoAtendimento.vue'
-import LogsAtendimento from '@/components/LogsAtendimento.vue'
+import { ref, reactive, computed, onMounted } from "vue";
+import api from "@/services/api";
+import clienteService from "@/services/cliente-service";
+import usuarioService from "@/services/usuario-service";
+import CampoData from "@/components/date/CampoData.vue";
+import NovoAtendimento from "@/components/NovoAtendimento.vue";
+import NovoParecer from "@/components/NovoParecer.vue";
+import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
+import LogsAtendimento from "@/components/LogsAtendimento.vue";
 
 export default {
-  name: 'FiltroAtendimentos',
-  components: { 
+  name: "FiltroAtendimentos",
+  components: {
     CampoData,
     NovoAtendimento,
     NovoParecer,
     HistoricoAtendimento,
-    LogsAtendimento
+    LogsAtendimento,
   },
 
   setup() {
-    const menuStart      = ref(false)
-    const menuEnd        = ref(false)
-    const filterExecuted = ref(false)
+    const menuStart = ref(false);
+    const menuEnd = ref(false);
+    const filterExecuted = ref(false);
 
     // Diálogo de Novo Atendimento
-    const showForm = ref(false)
+    const showForm = ref(false);
 
     // Diálogo de Parecer
-    const showParecer = ref(false)
-    const selectedAtendimento = ref(null)
+    const showParecer = ref(false);
+    const selectedAtendimento = ref(null);
 
     // Diálogo de Histórico
-    const showHistorico = ref(false)
+    const showHistorico = ref(false);
 
     // Diálogo de Log
-    const showLog = ref(false)
+    const showLog = ref(false);
 
     const filters = reactive({
-      userId:    null,
-      clientId:  null,
-      status:    null,
+      userId: null,
+      clientId: null,
+      status: null,
       startDate: null,
-      endDate:   null,
-    })
+      endDate: null,
+    });
 
-    const users        = ref([])
-    const clients      = ref([])
-    const atendimentos = ref([])
-    const selectedClientId = ref(null)
+    const users = ref([]);
+    const clients = ref([]);
+    const atendimentos = ref([]);
+    const selectedClientId = ref(null);
 
-    const statusOptions = ['Aberto', 'Encerrado', 'Reaberto']
+    const statusOptions = ["Aberto", "Encerrado", "Reaberto"];
 
     onMounted(async () => {
       try {
-        const rU = await usuarioService.obterTodos()
-        const u  = rU.data?.itens ?? rU.data ?? []
-        users.value = Array.isArray(u) ? u : []
-      } catch { users.value = [] }
+        const rU = await usuarioService.obterTodos();
+        const u = rU.data?.itens ?? rU.data ?? [];
+        users.value = Array.isArray(u) ? u : [];
+      } catch {
+        users.value = [];
+      }
 
       try {
-        const rC = await clienteService.obterTodos()
-        const c  = rC.data?.itens ?? rC.data ?? []
-        clients.value = Array.isArray(c) ? c : []
-      } catch { clients.value = [] }
-    })
+        const rC = await clienteService.obterTodos();
+        const c = rC.data?.itens ?? rC.data ?? [];
+        clients.value = Array.isArray(c) ? c : [];
+      } catch {
+        clients.value = [];
+      }
+    });
 
     const uniqueClients = computed(() => {
-      const map = new Map()
-      atendimentos.value.forEach(a => {
+      const map = new Map();
+      atendimentos.value.forEach((a) => {
         if (!map.has(a.idCliente)) {
-          const cli = clients.value.find(x => x.id===a.idCliente)
-          map.set(a.idCliente, cli||{id:a.idCliente,nome:'—'})
+          const cli = clients.value.find((x) => x.id === a.idCliente);
+          map.set(a.idCliente, cli || { id: a.idCliente, nome: "—" });
         }
-      })
-      return Array.from(map.values())
-    })
+      });
+      return Array.from(map.values());
+    });
 
-    // atendimentos filtrados por cliente clicado ou todos se nenhum
     const displayedAtendimentos = computed(() => {
       if (selectedClientId.value !== null) {
-        return atendimentos.value.filter(a => a.idCliente === selectedClientId.value)
+        return atendimentos.value.filter(
+          (a) => a.idCliente === selectedClientId.value
+        );
       }
-      return atendimentos.value
-    })
+      return atendimentos.value;
+    });
 
-    // monta e envia a query para a API
     async function applyFilters() {
-      const params = {}
-      if (filters.userId)    params.idUsuario   = filters.userId
-      if (filters.clientId)  params.idCliente   = filters.clientId
-      if (filters.status)    params.status      = filters.status
-      if (filters.startDate) params.dataInicial = `${filters.startDate} 00:00`
-      if (filters.endDate)   params.dataFinal   = `${filters.endDate} 23:59`
+      const params = {};
+      if (filters.userId) params.idUsuario = filters.userId;
+      if (filters.clientId) params.idCliente = filters.clientId;
+      if (filters.status) params.status = filters.status;
+      if (filters.startDate) params.dataInicial = `${filters.startDate} 00:00`;
+      if (filters.endDate) params.dataFinal = `${filters.endDate} 23:59`;
 
       try {
-        const r = await api.get('/atendimentos',{ params })
-        const b = r.data ?? r
+        const r = await api.get("/atendimentos", { params });
+        const b = r.data ?? r;
         atendimentos.value = Array.isArray(b)
           ? b
           : Array.isArray(b.itens)
-            ? b.itens
-            : []
+          ? b.itens
+          : [];
       } catch {
-        atendimentos.value = []
+        atendimentos.value = [];
       } finally {
-        filterExecuted.value = true
+        filterExecuted.value = true;
       }
     }
 
     function selectClient(id) {
-      selectedClientId.value = id
+      selectedClientId.value = id;
     }
 
-    function formatDate(iso){
-      if(!iso) return '-'
-      return new Date(iso).toLocaleString('pt-BR',{
-        day:'2-digit',month:'2-digit',year:'numeric',
-        hour:'2-digit',minute:'2-digit'
-      })
+    function formatDate(iso) {
+      if (!iso) return "-";
+      return new Date(iso).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
     }
 
     function chipColor(status) {
-      return status === 'Encerrado'
-        ? 'grey'
-        : status === 'Aberto'
-          ? 'green'
-          : 'blue'
+      return status === "Encerrado"
+        ? "grey"
+        : status === "Aberto"
+        ? "green"
+        : "blue";
     }
 
     function novoAtendimento() {
-      showForm.value = true
+      showForm.value = true;
     }
 
     function abrirParecer(atendimento) {
-      selectedAtendimento.value = atendimento
-      showParecer.value = true
+      selectedAtendimento.value = atendimento;
+      showParecer.value = true;
     }
 
     function abrirHistorico(atendimento) {
-      selectedAtendimento.value = atendimento
-      showHistorico.value = true
+      selectedAtendimento.value = atendimento;
+      showHistorico.value = true;
     }
 
     function abrirLog(atendimento) {
-      selectedAtendimento.value = atendimento
-      showLog.value = true
+      selectedAtendimento.value = atendimento;
+      showLog.value = true;
     }
 
     async function handleSave(novoData) {
       try {
-        await atendimentoService.cadastrarAtendimento(novoData)
-        showForm.value = false
-        const statusNum = filtroStatus.value === 'abertos' ? 1 : 2
-        await carregarAtendimentos(idCliente.value, statusNum)
+        await atendimentoService.cadastrarAtendimento(novoData);
+        showForm.value = false;
+        await applyFilters();
       } catch (e) {
-        console.error(e)
-        error.value = 'Erro ao salvar atendimento.'
+        console.error(e);
+        error.value = "Erro ao salvar atendimento.";
       }
     }
 
     async function handleParecerSaved() {
-      showParecer.value = false
-      const statusNum = filtroStatus.value === 'abertos' ? 1 : 2
-      await carregarAtendimentos(idCliente.value, statusNum)
+      showParecer.value = false;
+      await applyFilters();
     }
 
-    const viewLog  = _=>{}
-    const respond  = _=>{}
-    const remove   = _=>{}
-    const finalize = _=>{}
+    const viewLog = (_) => {};
+    const respond = (_) => {};
+    const remove = (_) => {};
+    const finalize = (_) => {};
 
     return {
-      menuStart, menuEnd, filters, filterExecuted,
-      users, clients, statusOptions,
-      atendimentos, uniqueClients, displayedAtendimentos,
+      menuStart,
+      menuEnd,
+      filters,
+      filterExecuted,
+      users,
+      clients,
+      statusOptions,
+      atendimentos,
+      uniqueClients,
+      displayedAtendimentos,
       selectedClientId,
-      applyFilters, selectClient,
-      formatDate, chipColor,
-      viewLog, respond, remove, finalize,
+      applyFilters,
+      selectClient,
+      formatDate,
+      chipColor,
+      viewLog,
+      respond,
+      remove,
+      finalize,
 
       // Novo Atendimento
       showForm,
@@ -487,12 +515,10 @@ export default {
 
       // Log
       showLog,
-      abrirLog
-    }
-  }
-}
+      abrirLog,
+    };
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
