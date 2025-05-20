@@ -265,7 +265,6 @@
       />
     </v-dialog>
 
-    <!-- diálogo de Motivo de Reabertura -->
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
@@ -399,16 +398,6 @@ export default {
       showEdit.value = true;
     }
 
-    async function reabrirAtendimento(at) {
-      try {
-        await atendimentoService.alterarStatusAtendimento(at.id);
-        const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
-        await carregarAtendimentos(idCliente.value, statusNum);
-      } catch (e) {
-        console.error("Erro ao reabrir atendimento:", e);
-      }
-    }
-
     async function handleSave(novoData) {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
@@ -429,6 +418,8 @@ export default {
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
+      const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
+      await carregarAtendimentos(idCliente.value, statusNum);
     }
     
     async function handleEditSaved() {
@@ -470,9 +461,6 @@ export default {
       showEdit,
       handleEditSaved,
       editarAtendimento,
-
-      // Reabertura
-      reabrirAtendimento,
 
       // Reabertura
       showReabrir,
