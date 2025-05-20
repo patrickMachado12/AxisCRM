@@ -303,6 +303,13 @@
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
+
+    <EditarAtendimento
+      v-if="selectedAtendimento"
+      v-model="showEdit"
+      :atendimento="selectedAtendimento"
+      @submitted="handleEditSaved"
+    />
   </v-container>
 </template>
 
@@ -317,6 +324,7 @@ import NovoParecer from "@/components/NovoParecer.vue";
 import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
 import LogsAtendimento from "@/components/LogsAtendimento.vue";
 import MotivoReabertura from "@/components/MotivoReabertura.vue";
+import EditarAtendimento from "@/components/EditarAtendimento.vue";
 
 export default {
   name: "FiltroAtendimentos",
@@ -327,6 +335,7 @@ export default {
     HistoricoAtendimento,
     LogsAtendimento,
     MotivoReabertura,
+    EditarAtendimento,
   },
 
   setup() {
@@ -349,6 +358,9 @@ export default {
 
     // Diálogo de Reabertura
     const showReabrir = ref(false);
+
+    // Diálogo de Editação de Atendimento
+    const showEdit = ref(false);
 
     const filters = reactive({
       userId: null,
@@ -473,6 +485,11 @@ export default {
       showReabrir.value = true;
     }
 
+    function editarAtendimento(atendimento) {
+      selectedAtendimento.value = atendimento;
+      showEdit.value = true;
+    }
+
     async function handleSave(novoData) {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
@@ -491,6 +508,11 @@ export default {
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
+      await applyFilters();
+    }
+
+    async function handleEditSaved() {
+      showEdit.value = false;
       await applyFilters();
     }
 
@@ -539,6 +561,12 @@ export default {
       showLog,
       abrirLog,
 
+      // Editação
+      showEdit,
+      handleEditSaved,
+      editarAtendimento,
+      applyFilters,
+      
       // Reabertura
       showReabrir,
       reabrirAtendimento,
