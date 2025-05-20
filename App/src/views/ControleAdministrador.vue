@@ -207,13 +207,11 @@
       </v-col>
     </v-row>
 
-    <!-- DIALOG: Novo Atendimento -->
     <v-dialog v-model="showForm" max-width="700" persistent>
       <v-card>
         <v-card-title>Novo atendimento</v-card-title>
         <v-divider />
         <v-card-text>
-          <!-- só montamos o form quando o diálogo estiver visível -->
           <NovoAtendimento
             v-if="showForm"
             :initial="{
@@ -228,7 +226,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Parecer de Atendimento -->
     <v-dialog v-model="showParecer" max-width="600" persistent>
       <v-card>
         <v-card-title>Parecer</v-card-title>
@@ -244,7 +241,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Histórico de Atendimento -->
     <v-dialog v-model="showHistorico" max-width="800" persistent>
       <v-card>
         <v-card-title>Histórico Atendimento</v-card-title>
@@ -261,7 +257,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Logs de Alterações -->
     <v-dialog v-model="showLog" max-width="600" persistent>
       <LogsAtendimento
         v-if="showLog && selectedAtendimento"
@@ -276,6 +271,13 @@
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
+
+    <EditarAtendimento
+      v-if="selectedAtendimento"
+      v-model="showEdit"
+      :atendimento="selectedAtendimento"
+      @submitted="handleEditSaved"
+    />
   </v-container>
 </template>
 
@@ -288,6 +290,7 @@ import NovoParecer from "@/components/NovoParecer.vue";
 import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
 import LogsAtendimento from "@/components/LogsAtendimento.vue";
 import MotivoReabertura from "@/components/MotivoReabertura.vue";
+import EditarAtendimento from "@/components/EditarAtendimento.vue";
 
 export default {
   name: "AtendimentoCliente",
@@ -297,6 +300,7 @@ export default {
     HistoricoAtendimento,
     LogsAtendimento,
     MotivoReabertura,
+    EditarAtendimento,
   },
 
   setup() {
@@ -322,6 +326,9 @@ export default {
 
     // Diálogo de Reabertura
     const showReabrir = ref(false);
+
+    // Diálogo de Editação de Atendimento
+    const showEdit = ref(false);
 
     const atendimentosFiltrados = computed(() => atendimentos.value);
 
@@ -387,10 +394,19 @@ export default {
       showReabrir.value = true;
     }
 
-    // abre o formulário de edição 
     function editarAtendimento(atendimento) {
-      // Implementar a função de reabrir atendimento
-      // Implementar a função de chamar a tela de edição
+      selectedAtendimento.value = atendimento;
+      showEdit.value = true;
+    }
+
+    async function reabrirAtendimento(at) {
+      try {
+        await atendimentoService.alterarStatusAtendimento(at.id);
+        const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
+        await carregarAtendimentos(idCliente.value, statusNum);
+      } catch (e) {
+        console.error("Erro ao reabrir atendimento:", e);
+      }
     }
 
     async function handleSave(novoData) {
@@ -413,6 +429,10 @@ export default {
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
+    }
+    
+    async function handleEditSaved() {
+      showEdit.value = false;
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
@@ -446,8 +466,12 @@ export default {
       showLog,
       abrirLog,
 
-      // Atendimento
+      // Editação
+      showEdit,
+      handleEditSaved,
       editarAtendimento,
+
+      // Reabertura
       reabrirAtendimento,
 
       // Reabertura
