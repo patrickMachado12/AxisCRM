@@ -269,6 +269,13 @@
         @close="showLog = false"
       />
     </v-dialog>
+
+    <!-- diálogo de Motivo de Reabertura -->
+    <MotivoReabertura
+      v-model="showReabrir"
+      :atendimento="selectedAtendimento"
+      @submitted="handleReabrirSaved"
+    />
   </v-container>
 </template>
 
@@ -280,6 +287,7 @@ import NovoAtendimento from "@/components/NovoAtendimento.vue";
 import NovoParecer from "@/components/NovoParecer.vue";
 import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
 import LogsAtendimento from "@/components/LogsAtendimento.vue";
+import MotivoReabertura from "@/components/MotivoReabertura.vue";
 
 export default {
   name: "AtendimentoCliente",
@@ -288,6 +296,7 @@ export default {
     NovoParecer,
     HistoricoAtendimento,
     LogsAtendimento,
+    MotivoReabertura,
   },
 
   setup() {
@@ -310,6 +319,9 @@ export default {
 
     // Diálogo de Log
     const showLog = ref(false);
+
+    // Diálogo de Reabertura
+    const showReabrir = ref(false);
 
     const atendimentosFiltrados = computed(() => atendimentos.value);
 
@@ -370,21 +382,15 @@ export default {
       showLog.value = true;
     }
 
-    // abre o formulário de edição 
-    function editarAtendimento(at) {
-      // Implementar a função de reabrir atendimento
-      // Implementar a função de chamar a tela de edição
+    function reabrirAtendimento(atendimento) {
+      selectedAtendimento.value = atendimento;
+      showReabrir.value = true;
     }
 
-    // chama o endpoint de reabertura e recarrega a lista
-    async function reabrirAtendimento(at) {
-      try {
-        await atendimentoService.alterarStatusAtendimento(at.id);
-        const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
-        await carregarAtendimentos(idCliente.value, statusNum);
-      } catch (e) {
-        console.error("Erro ao reabrir atendimento:", e);
-      }
+    // abre o formulário de edição 
+    function editarAtendimento(atendimento) {
+      // Implementar a função de reabrir atendimento
+      // Implementar a função de chamar a tela de edição
     }
 
     async function handleSave(novoData) {
@@ -401,6 +407,12 @@ export default {
 
     async function handleParecerSaved() {
       showParecer.value = false;
+      const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
+      await carregarAtendimentos(idCliente.value, statusNum);
+    }
+
+    async function handleReabrirSaved() {
+      showReabrir.value = false;
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
@@ -437,6 +449,11 @@ export default {
       // Atendimento
       editarAtendimento,
       reabrirAtendimento,
+
+      // Reabertura
+      showReabrir,
+      reabrirAtendimento,
+      handleReabrirSaved,
     };
   },
 };
