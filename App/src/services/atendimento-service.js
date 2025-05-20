@@ -35,8 +35,10 @@ export async function atualizarAtendimento(atendimento) {
   return data;
 }
 
-export async function alterarStatusAtendimento(id) {
-  const { data } = await api.patch(`/atendimentos/${id}`);
+export async function alterarStatusAtendimento(id, atendimento) {
+  const { data } = await api.patch(
+    `/atendimentos/${id}`, atendimento
+  );
   return data;
 }
 
