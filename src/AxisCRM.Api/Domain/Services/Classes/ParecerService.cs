@@ -36,17 +36,28 @@ namespace AxisCRM.Api.Domain.Services.Classes
             if (await _usuarioRepository.ObterPorIdAsync(entidade.IdUsuario) == null)
                 throw new BadRequestException($"Usuário com id {entidade.IdUsuario} não encontrado. Verifique!");
 
-            if (await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento) == null)
+            var atendimento = await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento);
+            if (atendimento == null)
                 throw new BadRequestException($"Atendimento com id {entidade.IdAtendimento} não encontrado. Verifique!");
 
-            var entity = _mapper.Map<Parecer>(entidade);
-            entity.DataCadastro = DateTime.Now;
+            if (atendimento.Status == StatusAtendimento.Encerrado)
+                throw new BadRequestException(
+                    $"Não foi possível adicionar o parecer. O atendimento {entidade.IdAtendimento} já encontra-se encerrado.");
 
-            await _parecerRepository.AdicionarAsync(entity);
+            if (entidade.Status.HasValue
+                && atendimento.Status == StatusAtendimento.Reaberto
+                && entidade.Status.Value == StatusAtendimento.Aberto)
+            {
+                throw new BadRequestException(
+                    $"Não foi possível alterar o status para Aberto. O atendimento {entidade.IdAtendimento} já encontra-se reaberto.");
+            }
+
+            var parecer = _mapper.Map<Parecer>(entidade);
+            parecer.DataCadastro = DateTime.Now;
+            await _parecerRepository.AdicionarAsync(parecer);
 
             if (entidade.Status.HasValue)
             {
-                var atendimento = await _atendimentoRepository.ObterPorIdAsync(entidade.IdAtendimento);
                 atendimento.Status = entidade.Status.Value;
                 atendimento.DataUltimaAtualizacao = DateTime.Now;
 
@@ -56,7 +67,7 @@ namespace AxisCRM.Api.Domain.Services.Classes
                 await _atendimentoRepository.AtualizarAsync(atendimento);
             }
 
-            return _mapper.Map<ParecerResponseDTO>(entity);
+            return _mapper.Map<ParecerResponseDTO>(parecer);
         }
 
         public async Task<ParecerResponseDTO> AtualizarParecer( int idAtendimento, int idParecer, ParecerEdicaoRequestDTO entidade)
