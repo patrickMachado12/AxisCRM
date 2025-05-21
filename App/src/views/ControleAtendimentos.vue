@@ -105,7 +105,7 @@
 
           <!-- Botão Filtrar -->
           <v-col cols="12" class="text-end">
-            <v-btn color="primary" @click="applyFilters"> Filtrar </v-btn>
+            <v-btn color="primary" @click="aplicaFiltro"> Filtrar </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
@@ -151,7 +151,7 @@
             <v-col
               cols="12"
               sm="6"
-              md="4"
+              md="6"
               v-for="att in displayedAtendimentos"
               :key="att.id"
             >
@@ -169,11 +169,11 @@
                 <v-card-text>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
-                    {{ formatDate(att.dataCadastro) }}
+                    {{ formataData(att.dataCadastro) }}
                   </div>
                   <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ att.historico || "Nenhum histórico" }}
+                    <v-icon small class="mr-1">mdi-calendar-check</v-icon>
+                    {{ formataData(att.dataEncerramento) ?? "-" }}
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-end">
@@ -234,7 +234,6 @@
       </v-col>
     </v-row>
 
-    <!-- DIALOG: Novo Atendimento -->
     <v-dialog v-model="showForm" max-width="700" persistent>
       <v-card>
         <v-card-title>Novo atendimento</v-card-title>
@@ -255,7 +254,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Parecer de Atendimento -->
     <v-dialog v-model="showParecer" max-width="600" persistent>
       <v-card>
         <v-card-title>Parecer</v-card-title>
@@ -271,7 +269,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Histórico de Atendimento -->
     <v-dialog v-model="showHistorico" max-width="800" persistent>
       <v-card>
         <v-card-title>Histórico Atendimento</v-card-title>
@@ -288,7 +285,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOG: Logs de Alterações -->
     <v-dialog v-model="showLog" max-width="600" persistent>
       <LogsAtendimento
         v-if="showLog && selectedAtendimento"
@@ -297,7 +293,6 @@
       />
     </v-dialog>
 
-    <!-- diálogo de Motivo de Reabertura -->
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
@@ -415,7 +410,7 @@ export default {
       return atendimentos.value;
     });
 
-    async function applyFilters() {
+    async function aplicaFiltro() {
       const params = {};
       if (filters.userId) params.idUsuario = filters.userId;
       if (filters.clientId) params.idCliente = filters.clientId;
@@ -442,7 +437,7 @@ export default {
       selectedClientId.value = id;
     }
 
-    function formatDate(iso) {
+    function formataData(iso) {
       if (!iso) return "-";
       return new Date(iso).toLocaleString("pt-BR", {
         day: "2-digit",
@@ -494,7 +489,7 @@ export default {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
         showForm.value = false;
-        await applyFilters();
+        await aplicaFiltro();
       } catch (e) {
         console.error(e);
         error.value = "Erro ao salvar atendimento.";
@@ -503,17 +498,17 @@ export default {
 
     async function handleParecerSaved() {
       showParecer.value = false;
-      await applyFilters();
+      await aplicaFiltro();
     }
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
-      await applyFilters();
+      await aplicaFiltro();
     }
 
     async function handleEditSaved() {
       showEdit.value = false;
-      await applyFilters();
+      await aplicaFiltro();
     }
 
     const viewLog = (_) => {};
@@ -533,9 +528,9 @@ export default {
       uniqueClients,
       displayedAtendimentos,
       selectedClientId,
-      applyFilters,
+      aplicaFiltro,
       selectClient,
-      formatDate,
+      formataData,
       chipColor,
       viewLog,
       respond,
@@ -565,7 +560,7 @@ export default {
       showEdit,
       handleEditSaved,
       editarAtendimento,
-      applyFilters,
+      aplicaFiltro,
       
       // Reabertura
       showReabrir,

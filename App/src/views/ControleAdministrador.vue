@@ -1,32 +1,28 @@
 <template>
   <v-container fluid>
-    <!-- Busca de cliente -->
     <v-card class="mb-6">
-      <v-card-title>Administrador de Relacionamentos</v-card-title>
+      <v-card-title class="titulo">Administrador de Relacionamentos</v-card-title>
       <v-divider />
       <v-card-text>
         <v-row align="center" dense>
           <v-col cols="12" sm="2">
             <v-text-field
+              :loading="loading"
               v-model="idCliente"
+              append-inner-icon="mdi-magnify"
               label="Código"
               placeholder="Código"
               dense
               outlined
-              clearable
-              type="number"
+              type="text"
               @keyup.enter="buscarCliente"
+              @click:append-inner="buscarCliente"
             >
-              <template #append>
-                <v-icon @click="buscarCliente" :loading="loading"
-                  >mdi-magnify</v-icon
-                >
-              </template>
             </v-text-field>
           </v-col>
 
           <template v-if="cliente">
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="6">
               <v-text-field
                 v-model="cliente.nome"
                 label="Nome"
@@ -35,10 +31,10 @@
                 readonly
               />
             </v-col>
-            <v-col cols="12" sm="4">
+            <v-col cols="12" sm="2">
               <v-text-field
-                v-model="cliente.email"
-                label="E-mail"
+                :model-value="formatarData(cliente.dataCadastro)"
+                label="Data Cadastro"
                 dense
                 outlined
                 readonly
@@ -48,54 +44,58 @@
         </v-row>
       </v-card-text>
     </v-card>
-
-    <!-- Mensagem de erro -->
     <v-alert v-if="error" type="error" dense class="mb-6">{{ error }}</v-alert>
-
-    <!-- Resumo e lista de atendimentos -->
     <v-row v-if="cliente" dense>
-      <!-- Resumo do cliente -->
       <v-col cols="12" md="3">
         <v-card class="mb-6">
-          <v-card-title>Dados do Cliente ({{ cliente.id }})</v-card-title>
+          <v-card-title>Dados do Cliente</v-card-title>
           <v-divider />
           <v-card-text>
             <v-list dense>
               <v-list-item>
-                <v-list-item-content
-                  ><strong>CPF/CNPJ:</strong>
-                  {{ cliente.cpfCnpj }}</v-list-item-content
-                >
+                <v-list-item-icon class="me-2">
+                  <v-icon>mdi-fingerprint</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <strong>CPF/CNPJ:</strong> {{ cliente.cpfCnpj }}
+                </v-list-item-content>
               </v-list-item>
+
               <v-list-item>
-                <v-list-item-content
-                  ><strong>E-mail:</strong>
-                  {{ cliente.email }}</v-list-item-content
-                >
+                <v-list-item-icon class="me-2">
+                  <v-icon>mdi-account</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <strong>Tipo Pessoa:</strong>
+                  {{ formatarTipoPessoa(cliente.tipoPessoa) }}
+                </v-list-item-content>
               </v-list-item>
+
               <v-list-item>
-                <v-list-item-content
-                  ><strong>Tipo:</strong>
-                  {{ cliente.tipoPessoa }}</v-list-item-content
-                >
+                <v-list-item-icon class="me-2">
+                  <v-icon>mdi-email</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <strong>E-mail:</strong> {{ cliente.email }}
+                </v-list-item-content>
               </v-list-item>
+
               <v-list-item>
-                <v-list-item-content
-                  ><strong>Telefone:</strong>
-                  {{ cliente.telefone }}</v-list-item-content
-                >
+                <v-list-item-icon class="me-2">
+                  <v-icon>mdi-phone</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <strong>Telefone:</strong> {{ cliente.telefone }}
+                </v-list-item-content>
               </v-list-item>
+
               <v-list-item>
-                <v-list-item-content
-                  ><strong>Observação:</strong>
-                  {{ cliente.observacao }}</v-list-item-content
-                >
-              </v-list-item>
-              <v-list-item>
-                <v-list-item-content
-                  ><strong>Data Cadastro:</strong>
-                  {{ cliente.dataCadastro }}</v-list-item-content
-                >
+                <v-list-item-icon class="me-2">
+                  <v-icon>mdi-note-text</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <strong>Observação:</strong> {{ cliente.observacao }}
+                </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-card-text>
@@ -113,15 +113,17 @@
               Novo Atendimento
             </v-btn>
           </v-row>
-
           <v-divider class="my-4" />
-
-          <!-- Lista dinâmica de atendimentos -->
           <v-row dense>
-            <v-col cols="12" v-for="at in atendimentosFiltrados" :key="at.id">
-              <v-card class="mb-4" elevation="2" rounded="lg">
+            <v-col cols="12"
+              sm="6"
+              md="6" v-for="at in atendimentosFiltrados" :key="at.id">
+              <v-card class="mb-4" elevation="8" rounded="lg">
                 <v-card-title class="d-flex justify-space-between">
-                  <div>ATENDIMENTO #000{{ at.id }} – {{ at.assunto }}</div>
+                  <div>
+                    <v-icon small class="mr-1">mdi-file-document-outline</v-icon>
+                    ATENDIMENTO #{{ at.id }}
+                    </div>
                   <div class="d-flex align-center">
                     <v-chip
                       small
@@ -133,22 +135,24 @@
                     </v-chip>
                   </div>
                 </v-card-title>
-
                 <v-card-text>
                   <div class="d-flex align-center mb-2">
+                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
+                    {{ at.assunto || "Nenhuma observação" }}
+                  </div>
+                  <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
-                    Iniciado em {{ at.dataCadastro }}
+                    Iniciado em {{ formataData(at.dataCadastro) }}
                   </div>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-check</v-icon>
-                    Finalizado em {{ at.dataEncerramento ?? "-" }}
+                    Finalizado em {{ formataData(at.dataEncerramento) ?? "-" }}
                   </div>
                   <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ at.historico || "Nenhuma observação" }}
+                    <v-icon small class="mr-1">mdi-account-tie</v-icon>
+                    Usuario Abertura {{ at.idUsuario }}
                   </div>
                 </v-card-text>
-
                 <v-card-actions class="justify-end">
                   <v-btn
                     v-if="at.status !== 2"
@@ -158,25 +162,21 @@
                   >
                     Parecer
                   </v-btn>
-
                   <v-menu offset-y attach="body">
                     <template #activator="{ props }">
                       <v-btn icon v-bind="props">
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
-
                     <v-list dense>
                       <v-list-item @click="abrirHistorico(at)">
                         <v-list-item-title
                           >Histórico do atendimento</v-list-item-title
                         >
                       </v-list-item>
-
                       <v-list-item @click="abrirLog(at)">
                         <v-list-item-title>Log de alteração</v-list-item-title>
                       </v-list-item>
-
                       <v-list-item
                         v-if="at.status === 1 || at.status === 3"
                         @click="editarAtendimento(at)"
@@ -185,7 +185,6 @@
                           >Editar atendimento</v-list-item-title
                         >
                       </v-list-item>
-
                       <v-list-item
                         v-if="at.status === 2"
                         @click="reabrirAtendimento(at)"
@@ -282,6 +281,8 @@
 
 <script>
 import { ref, computed, watch } from "vue";
+import { formatarTipoPessoa } from "@/utils/enums";
+import { formatarData } from "@/utils/conversor-data";
 import clienteService from "@/services/cliente-service";
 import atendimentoService from "@/services/atendimento-service";
 import NovoAtendimento from "@/components/NovoAtendimento.vue";
@@ -293,6 +294,7 @@ import EditarAtendimento from "@/components/EditarAtendimento.vue";
 
 export default {
   name: "AtendimentoCliente",
+  props: { cliente: Object },
   components: {
     NovoAtendimento,
     NovoParecer,
@@ -398,6 +400,21 @@ export default {
       showEdit.value = true;
     }
 
+    // function formataDate(date) {
+    //   return date ? new Date(date).toLocaleDateString('pt-BR') : ''
+    // }
+
+    function formataData(iso) {
+      if (!iso) return "-";
+      return new Date(iso).toLocaleString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+
     async function handleSave(novoData) {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
@@ -421,7 +438,7 @@ export default {
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
-    
+
     async function handleEditSaved() {
       showEdit.value = false;
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
@@ -466,9 +483,15 @@ export default {
       showReabrir,
       reabrirAtendimento,
       handleReabrirSaved,
+      formatarData,
+      formatarTipoPessoa,
+      //formataDate,
+      formataData,
     };
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>
