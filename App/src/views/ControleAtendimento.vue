@@ -1,12 +1,10 @@
 <template>
   <v-container fluid>
-    <!-- CARD de Filtros -->
-    <v-card class="mb-6">
-      <v-card-title>Filtrar Atendimentos</v-card-title>
+    <v-card class="mb-6" elevation="8" rounded="lg">
+      <v-card-title>CRM Atendimentos</v-card-title>
       <v-divider />
       <v-card-text>
         <v-row align="center" dense>
-          <!-- Usuário -->
           <v-col cols="12" sm="3">
             <v-select
               v-model="filters.userId"
@@ -20,8 +18,6 @@
               clearable
             />
           </v-col>
-
-          <!-- Cliente -->
           <v-col cols="12" sm="3">
             <v-select
               v-model="filters.clientId"
@@ -35,8 +31,6 @@
               clearable
             />
           </v-col>
-
-          <!-- Status -->
           <v-col cols="12" sm="2">
             <v-select
               v-model="filters.status"
@@ -48,8 +42,6 @@
               clearable
             />
           </v-col>
-
-          <!-- Data Inicial -->
           <v-col cols="12" sm="2">
             <v-menu
               v-model="menuStart"
@@ -62,21 +54,14 @@
                 <v-text-field
                   v-model="filters.startDate"
                   label="Data Inicial"
-                  readonly
+                  type="date"
                   dense
                   outlined
-                  clearable
                   v-bind="props"
                 />
               </template>
-              <v-date-picker
-                v-model="filters.startDate"
-                @update:model-value="menuStart = false"
-              />
             </v-menu>
           </v-col>
-
-          <!-- Data Final -->
           <v-col cols="12" sm="2">
             <v-menu
               v-model="menuEnd"
@@ -89,32 +74,22 @@
                 <v-text-field
                   v-model="filters.endDate"
                   label="Data Final"
-                  readonly
+                  type="date"
                   dense
                   outlined
-                  clearable
                   v-bind="props"
                 />
               </template>
-              <v-date-picker
-                v-model="filters.endDate"
-                @update:model-value="menuEnd = false"
-              />
             </v-menu>
           </v-col>
-
-          <!-- Botão Filtrar -->
           <v-col cols="12" class="text-end">
             <v-btn color="primary" @click="aplicaFiltro"> Filtrar </v-btn>
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
-
-    <!-- GRID de resultados só depois de filtrar -->
     <v-row dense v-if="filterExecuted">
-      <!-- Coluna de Clientes -->
-      <v-col cols="12" md="3">
+      <v-col cols="12" md="3" elevetion="8">
         <v-card class="mb-6" outlined>
           <v-card-title>Clientes ({{ uniqueClients.length }})</v-card-title>
           <v-divider />
@@ -136,15 +111,8 @@
               </v-list-item>
             </v-list>
           </v-card-text>
-          <v-card-actions>
-            <v-btn text small @click="selectClient(null)">
-              Mostrar todos
-            </v-btn>
-          </v-card-actions>
         </v-card>
       </v-col>
-
-      <!-- Coluna de Atendimentos -->
       <v-col cols="12" md="9">
         <v-card class="pa-4" outlined>
           <v-row dense>
@@ -157,23 +125,32 @@
             >
               <v-card class="mb-4" elevation="8" rounded="lg">
                 <v-card-title class="d-flex justify-space-between">
-                  <div>#{{ att.id }} – {{ att.assunto }}</div>
+                  <v-card-title>ATENDIMENTO #{{ att.id }}</v-card-title>
                   <v-chip
                     small
-                    :color="chipColor(att.status)"
+                    :color="chipInfo(att.status).color"
                     text-color="white"
+                    class="mr-2"
                   >
-                    {{ att.status }}
+                    {{ chipInfo(att.status).label }}
                   </v-chip>
                 </v-card-title>
                 <v-card-text>
                   <div class="d-flex align-center mb-2">
+                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
+                    {{ att.assunto || "Nenhum assunto" }}
+                  </div>
+                  <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
-                    {{ formataData(att.dataCadastro) }}
+                    Iniciado em {{ formataData(att.dataCadastro) }}
                   </div>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-check</v-icon>
-                    {{ formataData(att.dataEncerramento) ?? "-" }}
+                    Finalizado em {{ formataData(att.dataEncerramento) ?? "-" }}
+                  </div>
+                  <div class="d-flex align-center mb-2">
+                    <v-icon small class="mr-1">mdi-account-tie</v-icon>
+                    Usuário Abertura {{ att.idUsuario }}
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-end">
@@ -192,18 +169,15 @@
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
-
                     <v-list dense>
                       <v-list-item @click="abrirHistorico(att)">
                         <v-list-item-title
                           >Histórico do atendimento</v-list-item-title
                         >
                       </v-list-item>
-
                       <v-list-item @click="abrirLog(att)">
                         <v-list-item-title>Log de alteração</v-list-item-title>
                       </v-list-item>
-
                       <v-list-item
                         v-if="att.status === 1 || att.status === 3"
                         @click="editarAtendimento(att)"
@@ -212,7 +186,6 @@
                           >Editar atendimento</v-list-item-title
                         >
                       </v-list-item>
-
                       <v-list-item
                         v-if="att.status === 2"
                         @click="reabrirAtendimento(att)"
@@ -233,13 +206,11 @@
         </v-card>
       </v-col>
     </v-row>
-
     <v-dialog v-model="showForm" max-width="700" persistent>
       <v-card>
         <v-card-title>Novo atendimento</v-card-title>
         <v-divider />
         <v-card-text>
-          <!-- só montamos o form quando o diálogo estiver visível -->
           <NovoAtendimento
             v-if="showForm"
             :initial="{
@@ -253,7 +224,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showParecer" max-width="600" persistent>
       <v-card>
         <v-card-title>Parecer</v-card-title>
@@ -268,7 +238,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showHistorico" max-width="800" persistent>
       <v-card>
         <v-card-title>Histórico Atendimento</v-card-title>
@@ -284,7 +253,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showLog" max-width="600" persistent>
       <LogsAtendimento
         v-if="showLog && selectedAtendimento"
@@ -292,13 +260,11 @@
         @close="showLog = false"
       />
     </v-dialog>
-
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
-
     <EditarAtendimento
       v-if="selectedAtendimento"
       v-model="showEdit"
@@ -310,21 +276,21 @@
 
 <script>
 import { ref, reactive, computed, onMounted } from "vue";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 import api from "@/services/api";
 import clienteService from "@/services/cliente-service";
 import usuarioService from "@/services/usuario-service";
-import CampoData from "@/components/date/CampoData.vue";
-import NovoAtendimento from "@/components/NovoAtendimento.vue";
-import NovoParecer from "@/components/NovoParecer.vue";
-import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
-import LogsAtendimento from "@/components/LogsAtendimento.vue";
-import MotivoReabertura from "@/components/MotivoReabertura.vue";
-import EditarAtendimento from "@/components/EditarAtendimento.vue";
+import NovoAtendimento from "@/components/atendimento/NovoAtendimento.vue";
+import NovoParecer from "@/components/atendimento/NovoParecer.vue";
+import HistoricoAtendimento from "@/components/atendimento/HistoricoAtendimento.vue";
+import LogsAtendimento from "@/components/atendimento/LogsAtendimento.vue";
+import MotivoReabertura from "@/components/atendimento/MotivoReabertura.vue";
+import EditarAtendimento from "@/components/atendimento/EditarAtendimento.vue";
 
 export default {
   name: "FiltroAtendimentos",
   components: {
-    CampoData,
     NovoAtendimento,
     NovoParecer,
     HistoricoAtendimento,
@@ -337,24 +303,12 @@ export default {
     const menuStart = ref(false);
     const menuEnd = ref(false);
     const filterExecuted = ref(false);
-
-    // Diálogo de Novo Atendimento
     const showForm = ref(false);
-
-    // Diálogo de Parecer
     const showParecer = ref(false);
     const selectedAtendimento = ref(null);
-
-    // Diálogo de Histórico
     const showHistorico = ref(false);
-
-    // Diálogo de Log
     const showLog = ref(false);
-
-    // Diálogo de Reabertura
     const showReabrir = ref(false);
-
-    // Diálogo de Editação de Atendimento
     const showEdit = ref(false);
 
     const filters = reactive({
@@ -371,6 +325,12 @@ export default {
     const selectedClientId = ref(null);
 
     const statusOptions = ["Aberto", "Encerrado", "Reaberto"];
+
+    const statusMap = {
+      1: { label: "Em aberto",   color: "green" },
+      2: { label: "Encerrado",    color: "grey"  },
+      3: { label: "Reaberto",     color: "blue"  },
+    }
 
     onMounted(async () => {
       try {
@@ -433,6 +393,11 @@ export default {
       }
     }
 
+    function chipInfo(status) {
+      return statusMap[status] || { label: "-", color: "grey" }
+    }
+
+
     function selectClient(id) {
       selectedClientId.value = id;
     }
@@ -488,26 +453,30 @@ export default {
     async function handleSave(novoData) {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
+        toast.success("Atendimento cadastrado com sucesso!");
         showForm.value = false;
         await aplicaFiltro();
       } catch (e) {
+        toast.error("Erro ao cadastrar atendimento.");
         console.error(e);
-        error.value = "Erro ao salvar atendimento.";
       }
     }
 
     async function handleParecerSaved() {
       showParecer.value = false;
+      toast.success("Parecer registrado com sucesso!");
       await aplicaFiltro();
     }
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
+      toast.success("Atendimento reaberto com sucesso!");
       await aplicaFiltro();
     }
 
     async function handleEditSaved() {
       showEdit.value = false;
+      toast.success("Atendimento editado com sucesso!");
       await aplicaFiltro();
     }
 
@@ -536,36 +505,25 @@ export default {
       respond,
       remove,
       finalize,
-
-      // Novo Atendimento
       showForm,
       novoAtendimento,
       handleSave,
-
-      // Parecer
       showParecer,
       abrirParecer,
       selectedAtendimento,
       handleParecerSaved,
-
-      // Histórico
       showHistorico,
       abrirHistorico,
-
-      // Log
       showLog,
       abrirLog,
-
-      // Editação
       showEdit,
       handleEditSaved,
       editarAtendimento,
       aplicaFiltro,
-      
-      // Reabertura
       showReabrir,
       reabrirAtendimento,
       handleReabrirSaved,
+      chipInfo,
     };
   },
 };

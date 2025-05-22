@@ -1,9 +1,8 @@
 import Login from '@/views/Login.vue'
 import ControleCliente from '@/views/ControleCliente.vue';
 import ControleUsuario from '@/views/ControleUsuario.vue';
-import Dashboard from '@/views/ControleDashboard.vue';
 import ControleAdministrador from '@/views/ControleAdministrador.vue';
-import ControleAtendimentos from '@/views/ControleAtendimentos.vue';
+import ControleAtendimento from '@/views/ControleAtendimento.vue';
 
 export default [
 	{
@@ -18,13 +17,6 @@ export default [
     redirect: '/login'
   },
 	{
-		path: '/dashboard',
-		name: 'Dashboard',
-		component: Dashboard,
-		title: 'Dashboard',
-		meta: { layout: 'auth', requiredAuth: true }
-	},
-	{
 		path: '/administrador',
 		name: 'Administrador',
 		component: ControleAdministrador,
@@ -32,10 +24,10 @@ export default [
 		meta: { layout: 'auth', requiredAuth: true }
 	},
 	{
-		path: '/atendimentos',
-		name: 'Atendimentos',
-		component: ControleAtendimentos,
-		title: 'Atendimentos',
+		path: '/atendimento',
+		name: 'Atendimento',
+		component: ControleAtendimento,
+		title: 'Atendimento',
 		meta: { layout: 'auth', requiredAuth: true }
 	},
 	{

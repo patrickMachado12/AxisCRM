@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-card class="mb-6">
+    <v-card class="mb-6" elevation="8" rounded="lg">
       <v-card-title class="titulo">Administrador de Relacionamentos</v-card-title>
       <v-divider />
       <v-card-text>
@@ -20,7 +20,6 @@
             >
             </v-text-field>
           </v-col>
-
           <template v-if="cliente">
             <v-col cols="12" sm="6">
               <v-text-field
@@ -47,7 +46,7 @@
     <v-alert v-if="error" type="error" dense class="mb-6">{{ error }}</v-alert>
     <v-row v-if="cliente" dense>
       <v-col cols="12" md="3">
-        <v-card class="mb-6">
+        <v-card class="mb-6" elevation="8">
           <v-card-title>Dados do Cliente</v-card-title>
           <v-divider />
           <v-card-text>
@@ -60,7 +59,6 @@
                   <strong>CPF/CNPJ:</strong> {{ cliente.cpfCnpj }}
                 </v-list-item-content>
               </v-list-item>
-
               <v-list-item>
                 <v-list-item-icon class="me-2">
                   <v-icon>mdi-account</v-icon>
@@ -70,7 +68,6 @@
                   {{ formatarTipoPessoa(cliente.tipoPessoa) }}
                 </v-list-item-content>
               </v-list-item>
-
               <v-list-item>
                 <v-list-item-icon class="me-2">
                   <v-icon>mdi-email</v-icon>
@@ -79,7 +76,6 @@
                   <strong>E-mail:</strong> {{ cliente.email }}
                 </v-list-item-content>
               </v-list-item>
-
               <v-list-item>
                 <v-list-item-icon class="me-2">
                   <v-icon>mdi-phone</v-icon>
@@ -88,7 +84,6 @@
                   <strong>Telefone:</strong> {{ cliente.telefone }}
                 </v-list-item-content>
               </v-list-item>
-
               <v-list-item>
                 <v-list-item-icon class="me-2">
                   <v-icon>mdi-note-text</v-icon>
@@ -102,11 +97,12 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="9">
-        <v-card class="pa-4">
-          <v-row align="center" justify="space-between">
+        <v-card class="pa-4" elevation="8" rounded="lg">
+          <v-row align="center" justify="content-space-between">
             <v-radio-group v-model="filtroStatus" row dense>
               <v-radio label="Abertos" value="abertos" />
               <v-radio label="Encerrados" value="encerrados" />
+              <v-radio label="Reabertos" value="reabertos" />
             </v-radio-group>
             <v-btn color="primary" @click="novoAtendimento">
               <v-icon left>mdi-plus</v-icon>
@@ -125,20 +121,20 @@
                     ATENDIMENTO #{{ at.id }}
                     </div>
                   <div class="d-flex align-center">
-                    <v-chip
-                      small
-                      :color="at.status === 2 ? 'grey' : 'green'"
-                      text-color="white"
-                      class="mr-2"
-                    >
-                      {{ at.status === 2 ? "Encerrado" : "Em aberto" }}
-                    </v-chip>
+                  <v-chip
+                    small
+                    :color="chipInfo(at.status).color"
+                    text-color="white"
+                    class="mr-2"
+                  >
+                    {{ chipInfo(at.status).label }}
+                  </v-chip>
                   </div>
                 </v-card-title>
                 <v-card-text>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ at.assunto || "Nenhuma observação" }}
+                    {{ at.assunto || "Nenhum assunto" }}
                   </div>
                   <div class="d-flex align-center mb-2">
                     <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
@@ -205,7 +201,6 @@
         </v-card>
       </v-col>
     </v-row>
-
     <v-dialog v-model="showForm" max-width="700" persistent>
       <v-card>
         <v-card-title>Novo atendimento</v-card-title>
@@ -224,7 +219,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showParecer" max-width="600" persistent>
       <v-card>
         <v-card-title>Parecer</v-card-title>
@@ -239,7 +233,6 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showHistorico" max-width="800" persistent>
       <v-card>
         <v-card-title>Histórico Atendimento</v-card-title>
@@ -255,7 +248,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <v-dialog v-model="showLog" max-width="600" persistent>
       <LogsAtendimento
         v-if="showLog && selectedAtendimento"
@@ -263,16 +255,14 @@
         @close="showLog = false"
       />
     </v-dialog>
-
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
-
     <EditarAtendimento
       v-if="selectedAtendimento"
-      v-model="showEdit"
+      v-model="showEdicao"
       :atendimento="selectedAtendimento"
       @submitted="handleEditSaved"
     />
@@ -283,14 +273,16 @@
 import { ref, computed, watch } from "vue";
 import { formatarTipoPessoa } from "@/utils/enums";
 import { formatarData } from "@/utils/conversor-data";
+import { toast } from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
 import clienteService from "@/services/cliente-service";
 import atendimentoService from "@/services/atendimento-service";
-import NovoAtendimento from "@/components/NovoAtendimento.vue";
-import NovoParecer from "@/components/NovoParecer.vue";
-import HistoricoAtendimento from "@/components/HistoricoAtendimento.vue";
-import LogsAtendimento from "@/components/LogsAtendimento.vue";
-import MotivoReabertura from "@/components/MotivoReabertura.vue";
-import EditarAtendimento from "@/components/EditarAtendimento.vue";
+import NovoAtendimento from "@/components/atendimento/NovoAtendimento.vue";
+import NovoParecer from "@/components/atendimento/NovoParecer.vue";
+import HistoricoAtendimento from "@/components/atendimento/HistoricoAtendimento.vue";
+import LogsAtendimento from "@/components/atendimento/LogsAtendimento.vue";
+import MotivoReabertura from "@/components/atendimento/MotivoReabertura.vue";
+import EditarAtendimento from "@/components/atendimento/EditarAtendimento.vue";
 
 export default {
   name: "AtendimentoCliente",
@@ -311,27 +303,35 @@ export default {
     const error = ref("");
     const atendimentos = ref([]);
     const filtroStatus = ref("abertos");
-
-    // Diálogo de Novo Atendimento
     const showForm = ref(false);
-
-    // Diálogo de Parecer
     const showParecer = ref(false);
-    const selectedAtendimento = ref(null);
-
-    // Diálogo de Histórico
     const showHistorico = ref(false);
-
-    // Diálogo de Log
     const showLog = ref(false);
-
-    // Diálogo de Reabertura
     const showReabrir = ref(false);
-
-    // Diálogo de Editação de Atendimento
-    const showEdit = ref(false);
-
+    const showEdicao = ref(false);
+    const selectedAtendimento = ref(null);
     const atendimentosFiltrados = computed(() => atendimentos.value);
+    const statusMap = {
+      1: { label: "Em aberto",   color: "green" },
+      2: { label: "Encerrado",    color: "grey"  },
+      3: { label: "Reaberto",     color: "blue"  },
+    }
+
+    watch(filtroStatus, async (novo) => {
+      if (!cliente.value) return;
+
+      const mapStatus = {
+        abertos:   1,
+        encerrados: 2,
+        reabertos:  3,
+      };
+
+      const statusNum = mapStatus[novo];
+      if (statusNum) {
+        await carregarAtendimentos(idCliente.value, statusNum);
+      }
+    });
+
 
     async function carregarAtendimentos(idCli, status) {
       loading.value = true;
@@ -365,12 +365,6 @@ export default {
       }
     }
 
-    watch(filtroStatus, async (novo) => {
-      if (!cliente.value) return;
-      const statusNum = novo === "abertos" ? 1 : 2;
-      await carregarAtendimentos(idCliente.value, statusNum);
-    });
-
     function novoAtendimento() {
       showForm.value = true;
     }
@@ -397,12 +391,12 @@ export default {
 
     function editarAtendimento(atendimento) {
       selectedAtendimento.value = atendimento;
-      showEdit.value = true;
+      showEdicao.value = true;
     }
 
-    // function formataDate(date) {
-    //   return date ? new Date(date).toLocaleDateString('pt-BR') : ''
-    // }
+    function chipInfo(status) {
+      return statusMap[status] || { label: "-", color: "grey" }
+    }
 
     function formataData(iso) {
       if (!iso) return "-";
@@ -418,29 +412,38 @@ export default {
     async function handleSave(novoData) {
       try {
         await atendimentoService.cadastrarAtendimento(novoData);
+        toast.success("Atendimento cadastrado com sucesso!");
         showForm.value = false;
         const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
         await carregarAtendimentos(idCliente.value, statusNum);
-      } catch (e) {
-        console.error(e);
-        error.value = "Erro ao salvar atendimento.";
+      } catch {
+        toast.error("Erro ao cadastrar atendimento.");
       }
     }
 
     async function handleParecerSaved() {
       showParecer.value = false;
+      toast.success("Parecer registrado com sucesso!");
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
 
     async function handleReabrirSaved() {
       showReabrir.value = false;
+      toast.success("Atendimento reaberto com sucesso!");
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
 
     async function handleEditSaved() {
-      showEdit.value = false;
+      showEdicao.value = false;
+      const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
+      await carregarAtendimentos(idCliente.value, statusNum);
+    }
+
+    async function handleEditSaved() {
+      showEdicao.value = false;
+      toast.success("Atendimento editado com sucesso!");
       const statusNum = filtroStatus.value === "abertos" ? 1 : 2;
       await carregarAtendimentos(idCliente.value, statusNum);
     }
@@ -454,44 +457,34 @@ export default {
       filtroStatus,
       buscarCliente,
       atendimentosFiltrados,
-
-      // Novo Atendimento
-      showForm,
       novoAtendimento,
       handleSave,
-
-      // Parecer
       showParecer,
+      showReabrir,
+      showHistorico,
+      showLog,
+      showEdicao,
+      showForm,
       abrirParecer,
       selectedAtendimento,
       handleParecerSaved,
-
-      // Histórico
-      showHistorico,
       abrirHistorico,
-
-      // Log
-      showLog,
       abrirLog,
-
-      // Editação
-      showEdit,
       handleEditSaved,
       editarAtendimento,
-
-      // Reabertura
-      showReabrir,
       reabrirAtendimento,
       handleReabrirSaved,
       formatarData,
       formatarTipoPessoa,
-      //formataDate,
       formataData,
+      chipInfo,
     };
   },
 };
 </script>
 
 <style scoped>
-
+.titulo {
+  margin-bottom: 8px;
+}
 </style>

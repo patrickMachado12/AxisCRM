@@ -7,7 +7,6 @@
       </v-btn>
     </v-card-title>
     <v-divider />
-
     <v-card-text>
       <v-skeleton-loader
         v-if="loading"
@@ -17,13 +16,13 @@
       <v-alert v-else-if="error" type="error" dense>
         {{ error }}
       </v-alert>
-
       <div v-else>
         <v-card
           v-for="(entry, idx) in entries"
           :key="idx"
           class="mb-4"
           outlined
+          elevation="3"
         >
           <v-card-text>
             {{ entry }}

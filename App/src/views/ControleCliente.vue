@@ -1,15 +1,14 @@
 <template>
   <v-container fluid>
-    <MensagemSucesso ref="successMessage" :message="message" />
     <v-row class="d-flex align-center mb-4">
       <v-col cols="12">
-        <h2 class="titulo">Cadastro de Clientes</h2>
+        <v-card-title>Cadastro de Clientes</v-card-title>
         <v-divider />
       </v-col>
       <v-col cols="12">
         <v-btn
           id="btn-cadastrar"
-          dark
+          color="primary"
           @click="abrirDialog()"
         >
           Cadastrar
@@ -81,7 +80,13 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn id="btn-gravar" @click="gravar">Gravar</v-btn>
+          <v-btn
+           id="btn-gravar" 
+           color="primary" 
+           @click="gravar"
+          >
+            Gravar
+          </v-btn>
           <v-btn text @click="dialog = false">Fechar</v-btn>
         </v-card-actions>
       </v-card>
@@ -95,7 +100,7 @@
           v-model:page="pagina"
           v-model:items-per-page="itensPorPagina"
           :items-length="totalItens"
-          class="elevation-1"
+          class="elevation-8"
         >
           <template #item.tipoPessoa="{ item }">
             {{ tiposPessoaOptions.find(p => p.value === item.tipoPessoa)?.label }}
@@ -120,13 +125,34 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteItem(item)">
+            <v-icon small @click="promptDelete(item)">
               mdi-delete
             </v-icon>
           </template>
         </v-data-table-server>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="confirmDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="text-h6">
+          Confirmar exclusão
+        </v-card-title>
+        <v-card-text>
+          Tem certeza que deseja excluir
+          <strong>{{ itemParaExcluir?.nome }}</strong>?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn id="btn-confirm-delete" @click="deleteItemConfirmado">
+            Sim, excluir
+          </v-btn>
+          <v-btn text @click="confirmDialog = false">
+            Não
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -134,7 +160,8 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useClientes } from '@/composables/useClientes'
-import MensagemSucesso from '@/components/alerts/MensagemSucesso.vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const { 
   clientes, 
@@ -172,11 +199,14 @@ const headers = [
 const pagina            = ref(1)
 const itensPorPagina    = ref(5)
 
-console.log(clientes.value);
-
 const formTitulo = computed(() =>
   editedItem.value.id ? 'Editar' : 'Cadastrar'
 )
+
+const confirmDialog = ref(false)
+const itemParaExcluir = ref(null)
+
+onMounted(loadClientes)
 
 watch([pagina, itensPorPagina], () => {
   loadClientes(pagina.value, itensPorPagina.value)
@@ -184,24 +214,25 @@ watch([pagina, itensPorPagina], () => {
 
 onMounted(() => loadClientes(pagina.value, itensPorPagina.value))
 
-  function abrirDialog(item) {
-    if (item) {
-      editedItem.value = { ...item }
-    } else {
-      editedItem.value = {
-        tipoPessoa: tiposPessoaOptions[0].value,
-        nome: '',
-        cpfCnpj: '',
-        telefone: '',
-        email: '',
-        observacao: ''
-      }
+function abrirDialog(item) {
+  if (item) {
+    editedItem.value = { ...item }
+  } else {
+    editedItem.value = {
+      tipoPessoa: tiposPessoaOptions[0].value,
+      nome: '',
+      cpfCnpj: '',
+      telefone: '',
+      email: '',
+      observacao: ''
     }
-    dialog.value = true
   }
+  dialog.value = true
+}
+
 async function gravar() {
   await saveCliente(editedItem.value)
-  message.value = 'Cliente salvo com sucesso!'
+  toast.success('Sucesso!')
   dialog.value = false
   loadClientes()
 }
@@ -210,35 +241,25 @@ function editItem(item) {
   abrirDialog(item)
 }
 
-async function deleteItem(item) {
-  await deleteCliente(item.id)
-  message.value = 'Usuário excluído com sucesso!'
-  loadClientes()
+function promptDelete(item) {
+  itemParaExcluir.value = item
+  confirmDialog.value = true
+}
+
+async function deleteItemConfirmado() {
+  await deleteCliente(itemParaExcluir.value.id)
+  toast.success('Cliente excluído com sucesso!')
+  loadClientes(pagina.value, itensPorPagina.value)
+  confirmDialog.value = false
+  itemParaExcluir.value = null
 }
 
 function formatDate(date) {
   return date ? new Date(date).toLocaleDateString('pt-BR') : ''
 }
 
-onMounted(loadClientes)
 </script>
 
 <style scoped>
-#btn-cadastrar {
-  background-color: var(--cor-primaria);
-  margin-left: 12px;
-}
 
-#btn-gravar {
-  background-color: var(--cor-primaria);
-  color: #fff;
-}
-
-.v-btn {
-  text-transform: none;
-}
-
-.titulo {
-  margin-bottom: 8px;
-}
 </style>

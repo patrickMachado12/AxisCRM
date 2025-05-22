@@ -12,7 +12,6 @@
         />
       </v-col>
     </v-row>
-
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -24,7 +23,6 @@
         />
       </v-col>
     </v-row>
-
     <v-row>
       <v-col cols="12">
         <v-textarea
@@ -37,7 +35,6 @@
         />
       </v-col>
     </v-row>
-
     <v-row>
       <v-col cols="12">
         <v-text-field
@@ -48,7 +45,6 @@
         />
       </v-col>
     </v-row>
-
     <v-row>
       <v-col cols="12">
         <label class="d-block mb-2">Status</label>
@@ -58,10 +54,9 @@
         </v-radio-group>
       </v-col>
     </v-row>
-
     <v-row justify="end" class="mt-4">
-      <v-btn text @click="$emit('cancel')">Cancelar</v-btn>
-      <v-btn color="primary" @click="onSubmit">Salvar</v-btn>
+      <v-btn variant="outlined" color="primary" @click="onSubmit">Gravar</v-btn>
+      <v-btn variant="outlined" text @click="$emit('cancel')">Cancelar</v-btn>
     </v-row>
   </v-form>
 </template>
