@@ -1,0 +1,1579 @@
+{
+	"info": {
+		"_postman_id": "ead4a76e-0d86-4d68-8e17-4069c0aafaac",
+		"name": "API AxisCRM",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12920997",
+		"_collection_link": "https://patrick-7612.postman.co/workspace/Gest%25C3%25A3o-Total~fe31014d-0948-41d3-ac2b-76e7978f195f/collection/12920997-ead4a76e-0d86-4d68-8e17-4069c0aafaac?action=share&source=collection_link&creator=12920997"
+	},
+	"item": [
+		{
+			"name": "1- Usuário",
+			"item": [
+				{
+					"name": "Autenticar",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var parse = JSON.parse(responseBody);\r",
+									"postman.setGlobalVariable(\"token\", '' + parse.token);\r",
+									"tests[\"Status de retorno de erro\"] = responseCode.code === 200;\r",
+									"tests[\"Tempo de resposta\"]     = responseTime < environment.temporespostatoken;"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@gmail.com\",\r\n  \"senha\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/usuarios/login",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar um usuário",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"padrao@gmail.com\",\r\n    \"senha\": \"123456\",\r\n    \"perfil\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/usuarios",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter uma lista de usuarios",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/usuarios?Pagina=1&TamanhoPagina=10",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios"
+							],
+							"query": [
+								{
+									"key": "Pagina",
+									"value": "1"
+								},
+								{
+									"key": "TamanhoPagina",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter um usuário por Identificador",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/usuarios/1",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar um usuário",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"perfil\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/usuarios/2",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir um usuário",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/usuarios/63",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"usuarios",
+								"63"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2- Cliente",
+			"item": [
+				{
+					"name": "Adicionar um novo cliente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Fulano\",\r\n    \"cpfCnpj\": \"78.676.515/0001-01\",\r\n    \"telefone\": \"21 1234-5678\",\r\n    \"email\": \"cliente@gmail.com\",\r\n    \"observacao\": \"Dados no campo de observação 123456 !@#$%¨&*()_+\",\r\n    \"tipoPessoa\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/clientes",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"clientes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter uma lista de clientes",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/clientes?Pagina=1&TamanhoPagina=10",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"clientes"
+							],
+							"query": [
+								{
+									"key": "Pagina",
+									"value": "1"
+								},
+								{
+									"key": "TamanhoPagina",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter um cliente por Identificador",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/clientes/1",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"clientes",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar um cliente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nome\": \"Cliente teste 2\",\r\n    \"tipoPessoa\": 2,\r\n    \"cpfCnpj\": \"62.581.888/0001-50\",\r\n    \"telefone\": \"21 1234-5678\",\r\n    \"email\": \"cliente@gmail.com\",\r\n    \"observacao\": \"Dados no campo de observação 123456 !@#$%¨&*()_+\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/clientes/2",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"clientes",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Excluir um cliente",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/clientes/60",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"clientes",
+								"60"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3- Atendimento",
+			"item": [
+				{
+					"name": "Adicionar um novo atendimento",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assunto\": \"Cliente entrou em contato com o suporte\",\r\n    \"idCliente\": 3,\r\n    \"status\": \"aberto\",\r\n    \"parecer\": {\r\n        \"descricao\": \"Cliente entrou em contato informando que está com problema no Contábil.\",\r\n        \"pessoaContato\": \"Fulano de tal\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter atendimentos filtrados",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos?idUsuario=1&idCliente=1&status=Encerrado&dataInicial=2025-05-15 00:00&dataFinal=2025-05-16 23:59",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos"
+							],
+							"query": [
+								{
+									"key": "idUsuario",
+									"value": "1"
+								},
+								{
+									"key": "idCliente",
+									"value": "1"
+								},
+								{
+									"key": "status",
+									"value": "Encerrado",
+									"description": "Aberto =1 / Encerrado = 2 / Reaberto = 3"
+								},
+								{
+									"key": "dataInicial",
+									"value": "2025-05-15 00:00",
+									"description": "2025-05-15 00:00"
+								},
+								{
+									"key": "dataFinal",
+									"value": "2025-05-16 23:59",
+									"description": "2025-05-17 23:59"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter um atendimento por Identificador",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/3",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar um atendimento",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assunto\": \"Edição do campo de assunto do atendimento novamente\",\r\n    \"idCliente\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/48",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"48"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Altera o status de um atendimento",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"motivo\": \"Encerrado por erro de abertura\",\r\n    \"status\": \"Reaberto\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/6",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4-Parecer",
+			"item": [
+				{
+					"name": "Adicionar um novo parecer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"descricao\": \"Moderador deu parecer\",\r\n  \"pessoaContato\": \"Moderador\",\r\n  \"status\": \"encerrado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/6/pareceres",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"6",
+								"pareceres"
+							],
+							"query": [
+								{
+									"key": "IdAtendimento",
+									"value": "4",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obter um parecer por Identificador",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/26/pareceres/19",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"26",
+								"pareceres",
+								"19"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar um parecer",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Defina as credenciais para autenticação\r",
+									"const credentials = {\r",
+									"    email: 'admin@gmail.com',  // Substitua pelo seu usuário\r",
+									"    senha: '123456'     // Substitua pela sua senha\r",
+									"};\r",
+									"\r",
+									"// Função para salvar o token\r",
+									"function saveAuthToken(token) {\r",
+									"    pm.environment.set(\"authToken\", token);\r",
+									"}\r",
+									"\r",
+									"// Verifique se o token já está salvo\r",
+									"if (!pm.environment.get(\"authToken\")) {\r",
+									"    // Se o token não estiver salvo, faça a autenticação\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://localhost:7021/usuarios/login',  // Substitua pela URL da sua API\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(credentials)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log('Erro ao autenticar:', err);\r",
+									"        } else {\r",
+									"            const jsonData = res.json();\r",
+									"            if (jsonData.token) {\r",
+									"                // Salva o token de autenticação no ambiente\r",
+									"                saveAuthToken(jsonData.token);\r",
+									"            } else {\r",
+									"                console.log('Falha ao receber o token de autenticação');\r",
+									"            }\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log('Token já presente no ambiente');\r",
+									"}\r",
+									"\r",
+									"// Adiciona o token no cabeçalho da requisição\r",
+									"pm.request.headers.add({\r",
+									"    key: 'Authorization',\r",
+									"    value: `Bearer ${pm.environment.get(\"authToken\")}`\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"descricao\": \"teste\",\r\n  \"pessoaContato\": \"teste\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{APIlocal}}/atendimentos/31/pareceres/23",
+							"host": [
+								"{{APIlocal}}"
+							],
+							"path": [
+								"atendimentos",
+								"31",
+								"pareceres",
+								"23"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
