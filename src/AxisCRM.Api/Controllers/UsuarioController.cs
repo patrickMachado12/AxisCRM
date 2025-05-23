@@ -1,10 +1,8 @@
 using FluentValidation;
-using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Usuario;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using AxisCRM.Api.Domain.Validator;
@@ -52,6 +50,12 @@ namespace AxisCRM.Api.Controllers
             return await ProcessarTarefa(_usuarioService.Autenticar(dto), false);
         }
 
+        /// <param name="dto"> 
+        /// Perfis de usuário:
+        ///     1 = Administrador |
+        ///     2 = Padrão |
+        ///     3 = Moderador |
+        /// </param>
         [HttpPost]
         [Authorize(Policy = "Admin")]
         [SwaggerOperation(
@@ -60,7 +64,7 @@ namespace AxisCRM.Api.Controllers
         )]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<UsuarioResponseDTO>> Adicionar(UsuarioRequestDTO dto)
         {
@@ -73,7 +77,6 @@ namespace AxisCRM.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
         [Authorize(Policy = "Admin")]
         [SwaggerOperation(
             Summary = "Obtém uma lista de usuários.", 

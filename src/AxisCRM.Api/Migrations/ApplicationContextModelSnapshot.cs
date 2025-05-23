@@ -22,11 +22,148 @@ namespace AxisCRM.Api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Atendimento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Assunto")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataEncerramento")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataUltimaAtualizacao")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Historico")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCliente");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("atendimento", (string)null);
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Cliente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CpfCnpj")
+                        .IsRequired()
+                        .HasMaxLength(18)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataExclusao")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Observacao")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<int>("TipoPessoa")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CpfCnpj")
+                        .IsUnique();
+
+                    b.ToTable("cliente", (string)null);
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Parecer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime?>("DataUltimaAlteracao")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<int>("IdAtendimento")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PessoaContato")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAtendimento");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("parecer", (string)null);
+                });
+
             modelBuilder.Entity("AxisCRM.Api.Domain.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -38,8 +175,8 @@ namespace AxisCRM.Api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<bool>("Excluido")
                         .ValueGeneratedOnAdd()
@@ -60,6 +197,49 @@ namespace AxisCRM.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("usuario", (string)null);
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Atendimento", b =>
+                {
+                    b.HasOne("AxisCRM.Api.Domain.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AxisCRM.Api.Domain.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Parecer", b =>
+                {
+                    b.HasOne("AxisCRM.Api.Domain.Models.Atendimento", "Atendimento")
+                        .WithMany("Pareceres")
+                        .HasForeignKey("IdAtendimento")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AxisCRM.Api.Domain.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Atendimento");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("AxisCRM.Api.Domain.Models.Atendimento", b =>
+                {
+                    b.Navigation("Pareceres");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,4 +1,3 @@
-using Xunit;
 using Moq;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
@@ -6,9 +5,6 @@ using FluentValidation.Results;
 using AxisCRM.Api.Controllers;
 using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.DTO.Usuario;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
 using AxisCRM.Api.DTO;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Services.Exceptions;
@@ -215,9 +211,9 @@ namespace AxisCRM.Test.Controllers
             };
             var resp = new UsuarioResponseDTO 
             { 
-                Id           = 1, 
-                Email        = dto.Email, 
-                Perfil       = (int)dto.Perfil.Value, 
+                Id  = 1, 
+                Email = dto.Email, 
+                Perfil = (int)dto.Perfil.Value, 
                 DataCadastro = DateTime.Today 
             }; 
 
@@ -227,7 +223,7 @@ namespace AxisCRM.Test.Controllers
 
             var result = await _controller.Atualizar(1, dto);
 
-            var ok    = Assert.IsType<OkObjectResult>(result.Result);
+            var ok = Assert.IsType<OkObjectResult>(result.Result);
             var value = Assert.IsType<UsuarioResponseDTO>(ok.Value);
             Assert.Equal(resp.Id, value.Id);
             Assert.Equal(resp.Email, value.Email);

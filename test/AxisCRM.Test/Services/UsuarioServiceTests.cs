@@ -1,8 +1,5 @@
-using Xunit;
 using Moq;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AxisCRM.Api.DTO.Usuario;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Classes;
@@ -61,6 +58,114 @@ namespace AxisCRM.Test.Services
             await Assert.ThrowsAsync<AuthenticationException>(() => 
                 _service.Autenticar(new UsuarioLoginRequestDTO { Email = user.Email, Senha = "abc123" }));
         }
+
+        [Fact]
+        public async Task Adicionar_ComEmailExistente_LancaBadRequestException()
+        {
+            var dto = new UsuarioRequestDTO 
+            { 
+                Email  = "existe@e.com", 
+                Senha  = "senha123", 
+                Perfil = PerfilUsuario.Padrao 
+            };
+
+            var claimsIdentity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Email, "admin@e.com")
+            }, "TestAuth");
+            var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal(claimsIdentity) };
+            _httpContextAccessorMock
+                .Setup(a => a.HttpContext)
+                .Returns(httpContext);
+
+            var loggedInUser = new Usuario 
+            { 
+                Id     = 99, 
+                Email  = "admin@e.com", 
+                Perfil = PerfilUsuario.Admin 
+            };
+            _repositoryMock
+                .Setup(r => r.ObterPorEmailAsync("admin@e.com"))
+                .ReturnsAsync(loggedInUser);
+
+            var usuarioExistente = new Usuario { Id = 1, Email = dto.Email };
+            _repositoryMock
+                .Setup(r => r.ObterPorEmailAsync(dto.Email))
+                .ReturnsAsync(usuarioExistente);
+
+            await Assert.ThrowsAsync<BadRequestException>(() => _service.Adicionar(dto));
+        }
+
+        [Fact]
+        public async Task Adicionar_ComDadosValidos_RetornaUsuarioResponseDTO()
+        {
+            var dto = new UsuarioRequestDTO 
+            { 
+                Email  = "novo@e.com", 
+                Senha  = "senha123", 
+                Perfil = PerfilUsuario.Moderador 
+            };
+
+            var claimsIdentity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Email, "admin@e.com")
+            }, "TestAuth");
+            var httpContext = new DefaultHttpContext { User = new ClaimsPrincipal(claimsIdentity) };
+            _httpContextAccessorMock
+                .Setup(a => a.HttpContext)
+                .Returns(httpContext);
+
+            var loggedInUser = new Usuario
+            {
+                Id    = 99,
+                Email = "admin@e.com",
+                Perfil = PerfilUsuario.Admin,
+
+            };
+            _repositoryMock
+                .Setup(r => r.ObterPorEmailAsync("admin@e.com"))
+                .ReturnsAsync(loggedInUser);
+
+            _repositoryMock
+                .Setup(r => r.ObterPorEmailAsync(dto.Email))
+                .ReturnsAsync((Usuario)null);
+
+            var entity = new Usuario 
+            { 
+                Id           = 5, 
+                Email        = dto.Email, 
+                Senha        = dto.Senha, 
+                Perfil       = dto.Perfil.Value, 
+                DataCadastro = DateTime.Today 
+            };
+            _mapperMock
+                .Setup(m => m.Map<Usuario>(dto))
+                .Returns(entity);
+
+            _repositoryMock
+                .Setup(r => r.AdicionarAsync(entity))
+                .ReturnsAsync(entity);
+
+            var responseDto = new UsuarioResponseDTO
+            {
+                Id           = entity.Id,
+                Email        = entity.Email,
+                Perfil       = (int)entity.Perfil,
+                DataCadastro = entity.DataCadastro
+            };
+            _mapperMock
+                .Setup(m => m.Map<UsuarioResponseDTO>(entity))
+                .Returns(responseDto);
+
+            var result = await _service.Adicionar(dto);
+
+            Assert.Equal(responseDto.Id,           result.Id);
+            Assert.Equal(responseDto.Email,        result.Email);
+            Assert.Equal(responseDto.Perfil,       result.Perfil);
+            Assert.Equal(responseDto.DataCadastro, result.DataCadastro);
+            _repositoryMock.Verify(r => r.AdicionarAsync(entity), Times.Once);
+        }
+
 
         [Fact]
         public async Task ObterPorId_ComUsuarioNull_RetornaThrowsNotFoundException()

@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Extensoes;
@@ -26,12 +22,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
         private readonly TokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
     
-        public UsuarioService(
-            IUsuarioRepository usuarioRepository,
+        public UsuarioService(IUsuarioRepository usuarioRepository,
             IMapper mapper,
             TokenService tokenService,
-            IHttpContextAccessor httpContextAccessor
-            )
+            IHttpContextAccessor httpContextAccessor)
         {
             _usuarioRepository = usuarioRepository;
             _mapper = mapper;
@@ -169,10 +163,10 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             return new PaginacaoResponseDTO<UsuarioResponseDTO>
             {
-                Itens        = usuariosDTO,
-                TotalItens   = totalItens,
-                PaginaAtual  = paginacao.Pagina,
-                TamanhoPagina= tamanhoValido,
+                Itens = usuariosDTO,
+                TotalItens = totalItens,
+                PaginaAtual = paginacao.Pagina,
+                TamanhoPagina = tamanhoValido,
                 TotalPaginas = (int)Math.Ceiling((double)totalItens / tamanhoValido)
             };
         }

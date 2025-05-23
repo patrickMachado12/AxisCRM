@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Usuario;
 
 namespace AxisCRM.Api.Domain.Services.Interfaces

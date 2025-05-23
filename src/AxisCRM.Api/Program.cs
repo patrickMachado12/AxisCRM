@@ -13,6 +13,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AxisCRM.Api.Domain.Validator.ClienteValidator;
+using AxisCRM.Api.Domain.Validator.AtendimentoValidator;
+using AxisCRM.Api.Domain.Validator.ParecerValidator;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +39,9 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     var config = new MapperConfiguration(cfg => {
         
         cfg.AddProfile<UsuarioProfile>();
+        cfg.AddProfile<ClienteProfile>();
+        cfg.AddProfile<AtendimentoProfile>();
+        cfg.AddProfile<ParecerProfile>();
     });
 
     IMapper mapper = config.CreateMapper();
@@ -47,9 +54,21 @@ static void ConfigurarInjecaoDeDependencia(WebApplicationBuilder builder)
     .AddScoped<TokenService>()
     .AddScoped<IUsuarioRepository, UsuarioRepository>()
     .AddScoped<IUsuarioService, UsuarioService>()
-    .AddTransient<UsuarioCadastroValidador>()
-    .AddTransient<UsuarioEdicaoValidador>()
-    .AddValidatorsFromAssemblyContaining<UsuarioLoginValidador>();
+    .AddScoped<IClienteRepository, ClienteRepository>()
+    .AddScoped<IClienteService, ClienteService>()
+    .AddScoped<IAtendimentoRepository, AtendimentoRepository>()
+    .AddScoped<IAtendimentoService, AtendimentoService>()
+    .AddScoped<IParecerRepository, ParecerRepository>()
+    .AddScoped<IParecerService, ParecerService>()
+    .AddValidatorsFromAssemblyContaining<UsuarioCadastroValidador>()
+    .AddValidatorsFromAssemblyContaining<UsuarioEdicaoValidador>()
+    .AddValidatorsFromAssemblyContaining<UsuarioLoginValidador>()
+    .AddValidatorsFromAssemblyContaining<UsuarioValidadorBase>()
+    .AddValidatorsFromAssemblyContaining<ClienteValidador>()
+    .AddValidatorsFromAssemblyContaining<AtendimentoValidador>()
+    .AddValidatorsFromAssemblyContaining<AtendimentoEdicaoValidador>()
+    .AddValidatorsFromAssemblyContaining<ParecerValidador>()
+    .AddValidatorsFromAssemblyContaining<ParecerEdicaoValidador>();
 }
 
 static void ConfigurarServices(WebApplicationBuilder builder)
@@ -63,6 +82,11 @@ static void ConfigurarServices(WebApplicationBuilder builder)
 
     builder.Services.AddSwaggerGen(c =>
     {
+        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+        c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Description = "JTW Authorization header using the Beaerer scheme (Example: 'Bearer 12345abcdef')",

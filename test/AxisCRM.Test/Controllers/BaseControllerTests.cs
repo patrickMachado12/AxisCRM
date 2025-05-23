@@ -1,10 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using AxisCRM.Api.Controllers;
 using AxisCRM.Api.Domain.Services.Exceptions;
 using AxisCRM.Api.DTO;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
 
 namespace AxisCRM.Tests.Controllers
 {
