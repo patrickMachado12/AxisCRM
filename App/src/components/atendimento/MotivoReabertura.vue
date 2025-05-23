@@ -2,6 +2,7 @@
   <v-dialog v-model="dialog" max-width="500" persistent>
     <v-card>
       <v-card-title>Motivo da Reabertura</v-card-title>
+      <v-divider />
       <v-card-text>
         <v-textarea
           v-model="motivo"
@@ -11,16 +12,19 @@
           outlined
         />
       </v-card-text>
+      <v-divider />
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="close">Cancelar</v-btn>
         <v-btn
+          class="mr-2"
           color="primary"
           @click="submit"
-          :disabled="!motivo.trim()"
+          rounded="3"
+          variant="flat"
         >
           Reabrir
         </v-btn>
+        <v-btn class="mr-2" variant="tonal" @click="close"> Cancelar </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -47,7 +51,10 @@ export default {
     const dialog = ref(props.modelValue);
     const motivo = ref("");
 
-    watch(() => props.modelValue, (v) => (dialog.value = v));
+    watch(
+      () => props.modelValue,
+      (v) => (dialog.value = v)
+    );
     watch(dialog, (v) => emit("update:modelValue", v));
 
     const close = () => {
@@ -77,5 +84,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

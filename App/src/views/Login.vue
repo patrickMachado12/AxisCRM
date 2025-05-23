@@ -112,7 +112,7 @@ export default {
           manterConectado: this.usuario.manterConectado,
         });
 
-        this.$router.push("/administrador");
+        this.$router.push("/atendimento");
       } catch (err) {
         this.$refs.form.resetValidation();
         this.$emit("error", "Usuário ou senha inválidos");

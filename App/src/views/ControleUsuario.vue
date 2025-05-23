@@ -19,6 +19,7 @@
     <v-dialog
       v-model="dialog"
       persistent
+      scrollable
       max-width="600px"
       :fullscreen="smAndDown"
     >
@@ -26,6 +27,7 @@
         <v-card-title>
           <span class="text-h5">{{ formTitulo }}</span>
         </v-card-title>
+        <v-divider />
         <v-card-text>
           <v-container>
             <v-row>
@@ -58,13 +60,24 @@
             </v-row>
           </v-container>
         </v-card-text>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn id="btn-gravar" color="primary" @click="gravar()">
+          <v-btn 
+            id="btn-gravar" 
+            color="primary" 
+            @click="gravar()"
+            class="mr-2"
+            rounded="3"
+            variant="flat"
+          >
             Gravar
           </v-btn>
-          <v-btn text @click="dialog = false">
-            Fechar
+          <v-btn
+            variant="tonal"  
+            @click="dialog = false"
+          >
+            Cancelar
           </v-btn>
         </v-card-actions>
       </v-card>

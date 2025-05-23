@@ -1,34 +1,48 @@
 <template>
   <v-dialog v-model="dialog" max-width="500" persistent>
-    <v-card>
+    <v-card style="overflow-y: hidden">
       <v-card-title>Editar Atendimento</v-card-title>
+      <v-divider />
       <v-card-text>
-        <v-text-field
-          v-model="idCliente"
-          label="Código do Cliente"
-          type="number"
-          dense
-          outlined
-          :rules="[rules.required]"
-        />
-        <v-text-field
+        <v-col cols="12" md="4">
+          <v-text-field
+            v-model="idCliente"
+            label="Código Cliente"
+            type="text"
+            outlined
+            dense
+            :rules="[rules.required]"
+          />
+        </v-col>
+        <v-col cols="12" md="12">
+          <v-text-field
           v-model="assunto"
           label="Assunto"
           dense
           outlined
           :rules="[rules.required]"
-        />
+          />
+        </v-col>
       </v-card-text>
+      <v-divider/>
       <v-card-actions>
-        <v-spacer />
         <v-btn
           color="primary"
           @click="submit"
           :disabled="!isValid"
+          class="mr-2"
+          rounded="3"
+          variant="flat"
         >
-          Salvar
+          Gravar
         </v-btn>
-        <v-btn text @click="close">Cancelar</v-btn>
+        <v-btn 
+          class="mr-2"
+          variant="tonal" 
+          @click="close"
+        >
+          Cancelar
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

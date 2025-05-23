@@ -18,6 +18,7 @@
     <v-dialog
       v-model="dialog"
       persistent
+      scrollable
       max-width="600px"
       :fullscreen="smAndDown"
     >
@@ -25,10 +26,18 @@
         <v-card-title>
           <span class="text-h5">{{ formTitulo }}</span>
         </v-card-title>
+        <v-divider />
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12" sm="5">
+              <v-col cols="12" sm="8" md="7">
+                <v-text-field
+                  v-model="editedItem.cpfCnpj"
+                  label="CPF / CNPJ"
+                  required
+                />
+              </v-col>
+              <v-col cols="12" sm="5" md="5">
                 <v-radio-group 
                   inline 
                   label="Tipo Pessoa" 
@@ -47,13 +56,7 @@
                   required
                 />
               </v-col>
-              <v-col cols="12" sm="12">
-                <v-text-field
-                  v-model="editedItem.cpfCnpj"
-                  label="CPF / CNPJ"
-                  required
-                />
-              </v-col>
+              
               <v-col cols="12" sm="12">
                 <v-text-field
                   type="tel"
@@ -70,24 +73,35 @@
                 />
               </v-col>
               <v-col cols="12" sm="12">
-                <v-text-field
+                <v-textarea
                   v-model="editedItem.observacao"
                   label="Observação"
+                  rows="5"
+                  no-resize
                 />
               </v-col>          
             </v-row>
           </v-container>
         </v-card-text>
+        <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn
-           id="btn-gravar" 
-           color="primary" 
-           @click="gravar"
+          <v-btn 
+            id="btn-gravar" 
+            color="primary" 
+            @click="gravar()"
+            class="mr-2"
+            rounded="3"
+            variant="flat"
           >
             Gravar
           </v-btn>
-          <v-btn text @click="dialog = false">Fechar</v-btn>
+          <v-btn
+            variant="tonal"  
+            @click="dialog = false"
+          >
+            Cancelar
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

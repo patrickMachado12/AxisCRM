@@ -1,7 +1,9 @@
 <template>
   <v-container fluid>
     <v-card class="mb-6" elevation="8" rounded="lg">
-      <v-card-title class="titulo">Administrador de Relacionamentos</v-card-title>
+      <v-card-title class="titulo"
+        >Administrador de Relacionamentos</v-card-title
+      >
       <v-divider />
       <v-card-text>
         <v-row align="center" dense>
@@ -97,169 +99,167 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="9">
-        <v-card class="pa-4" elevation="8" rounded="lg">
-          <v-row align="center" justify="content-space-between">
-            <v-radio-group v-model="filtroStatus" row dense>
-              <v-radio label="Abertos" value="abertos" />
-              <v-radio label="Encerrados" value="encerrados" />
-              <v-radio label="Reabertos" value="reabertos" />
-            </v-radio-group>
-            <v-btn color="primary" @click="novoAtendimento">
-              <v-icon left>mdi-plus</v-icon>
-              Novo Atendimento
-            </v-btn>
-          </v-row>
-          <v-divider class="my-4" />
-          <v-row dense>
-            <v-col cols="12"
-              sm="6"
-              md="6" v-for="at in atendimentosFiltrados" :key="at.id">
-              <v-card class="mb-4" elevation="8" rounded="lg">
-                <v-card-title class="d-flex justify-space-between">
-                  <div>
-                    <v-icon small class="mr-1">mdi-file-document-outline</v-icon>
-                    ATENDIMENTO #{{ at.id }}
+        <v-card
+          outlined
+          class="d-flex flex-column"
+          style="height: 600px;"            
+        >
+          <div class="pa-2">
+            <v-row align="center" justify="space-between" dense>
+              <v-radio-group v-model="filtroStatus" row dense>
+                <v-radio label="Abertos" value="abertos" />
+                <v-radio label="Encerrados" value="encerrados" />
+                <v-radio label="Reabertos" value="reabertos" />
+              </v-radio-group>
+              <v-btn class="mr-3" color="primary" @click="novoAtendimento">
+                <v-icon left>mdi-plus</v-icon>
+                Novo Atendimento
+              </v-btn>
+            </v-row>
+            <v-divider class="my-2" />
+          </div>
+          <v-card-text class="flex-grow-1 overflow-y-auto pa-4">
+            <v-row dense>
+              <v-col
+                cols="12"
+                sm="6"
+                md="6"
+                v-for="at in atendimentosFiltrados"
+                :key="at.id"
+              >
+                <v-card class="mb-4" elevation="8" rounded="lg">
+                  <v-card-title class="d-flex justify-space-between">
+                    <div>
+                      <v-icon small class="mr-1">mdi-file-document-outline</v-icon>
+                      ATENDIMENTO #{{ at.id }}
                     </div>
-                  <div class="d-flex align-center">
-                  <v-chip
-                    small
-                    :color="chipInfo(at.status).color"
-                    text-color="white"
-                    class="mr-2"
-                  >
-                    {{ chipInfo(at.status).label }}
-                  </v-chip>
-                  </div>
-                </v-card-title>
-                <v-card-text>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ at.assunto || "Nenhum assunto" }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
-                    Iniciado em {{ formataData(at.dataCadastro) }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-calendar-check</v-icon>
-                    Finalizado em {{ formataData(at.dataEncerramento) ?? "-" }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-account-tie</v-icon>
-                    Usuario Abertura {{ at.idUsuario }}
-                  </div>
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                  <v-btn
-                    v-if="at.status !== 2"
-                    small
-                    color="primary"
-                    @click="abrirParecer(at)"
-                  >
-                    Parecer
-                  </v-btn>
-                  <v-menu offset-y attach="body">
-                    <template #activator="{ props }">
-                      <v-btn icon v-bind="props">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list dense>
-                      <v-list-item @click="abrirHistorico(at)">
-                        <v-list-item-title
-                          >Histórico do atendimento</v-list-item-title
+                    <v-chip
+                      small
+                      :color="chipInfo(at.status).color"
+                      text-color="white"
+                      class="mr-2"
+                    >
+                      {{ chipInfo(at.status).label }}
+                    </v-chip>
+                  </v-card-title>
+                  <v-card-text>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-comment-text</v-icon>
+                      {{ at.assunto || "Nenhum assunto" }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
+                      Iniciado em {{ formataData(at.dataCadastro) }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-calendar-check</v-icon>
+                      Finalizado em {{ formataData(at.dataEncerramento) ?? "-" }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-account-tie</v-icon>
+                      Usuario Abertura {{ at.idUsuario }}
+                    </div>
+                  </v-card-text>
+                  <v-card-actions class="justify-end">
+                    <v-btn
+                      v-if="at.status !== 2"
+                      small
+                      color="primary"
+                      @click="abrirParecer(at)"
+                      class="mr-2"
+                      rounded="3"
+                      variant="flat"
+                    >
+                      Parecer
+                    </v-btn>
+                    <v-menu offset-y attach="body">
+                      <template #activator="{ props }">
+                        <v-btn icon v-bind="props">
+                          <v-icon>mdi-dots-vertical</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list dense>
+                        <v-list-item @click="abrirHistorico(at)">
+                          <v-list-item-title
+                            >Histórico do atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                        <v-list-item @click="abrirLog(at)">
+                          <v-list-item-title>Log de alteração</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="at.status === 1 || at.status === 3"
+                          @click="editarAtendimento(at)"
                         >
-                      </v-list-item>
-                      <v-list-item @click="abrirLog(at)">
-                        <v-list-item-title>Log de alteração</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="at.status === 1 || at.status === 3"
-                        @click="editarAtendimento(at)"
-                      >
-                        <v-list-item-title
-                          >Editar atendimento</v-list-item-title
+                          <v-list-item-title
+                            >Editar atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                        <v-list-item
+                          v-if="at.status === 2"
+                          @click="reabrirAtendimento(at)"
                         >
-                      </v-list-item>
-                      <v-list-item
-                        v-if="at.status === 2"
-                        @click="reabrirAtendimento(at)"
-                      >
-                        <v-list-item-title
-                          >Reabrir atendimento</v-list-item-title
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-card-actions>
-              </v-card>
-            </v-col>
-            <v-col cols="12" v-if="!atendimentosFiltrados.length">
-              <p>Nenhum atendimento para exibir.</p>
-            </v-col>
-          </v-row>
+                          <v-list-item-title
+                            >Reabrir atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+              <v-col cols="12" v-if="!atendimentosFiltrados.length">
+                <p>Nenhum atendimento para exibir.</p>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer />
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="showForm" max-width="700" persistent>
-      <v-card>
-        <v-card-title>Novo atendimento</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <NovoAtendimento
-            v-if="showForm"
-            :initial="{
-              idCliente: idCliente,
-              status: 1,
-              parecer: { descricao: '', pessoaContato: '' },
-            }"
-            @save="handleSave"
-            @cancel="showForm = false"
-          />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showParecer" max-width="600" persistent>
-      <v-card>
-        <v-card-title>Parecer</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <NovoParecer
-            v-if="showParecer && selectedAtendimento"
-            :atendimento-id="selectedAtendimento.id"
-            @saved="handleParecerSaved"
-            @cancel="showParecer = false"
-          />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showHistorico" max-width="800" persistent>
-      <v-card>
-        <v-card-title>Histórico Atendimento</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <HistoricoAtendimento
-            v-if="showHistorico && selectedAtendimento"
-            :atendimento-id="selectedAtendimento.id"
-          />
-        </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn text @click="showHistorico = false">Fechar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showLog" max-width="600" persistent>
-      <LogsAtendimento
-        v-if="showLog && selectedAtendimento"
-        :atendimento-id="selectedAtendimento.id"
-        @close="showLog = false"
-      />
-    </v-dialog>
+
+    <NovoAtendimento
+      v-model="showForm"
+      v-if="showForm"
+      :initial="{
+        idCliente: idCliente,
+        status: 1,
+        parecer: { descricao: '', pessoaContato: '' },
+      }"
+      @save="handleSave"
+      @cancel="showForm = false"
+    />
+
+    <NovoParecer
+      v-model="showParecer"
+      v-if="showParecer && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+      @saved="handleParecerSaved"
+      @cancel="showParecer = false"
+    />
+
+    <HistoricoAtendimento
+      v-model="showHistorico"
+      @click="showHistorico = false"
+      v-if="showHistorico && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+    />
+
+    <LogsAtendimento
+      v-model="showLog"
+      v-if="showLog && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+      @close="showLog = false"
+    />
+
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
+
     <EditarAtendimento
       v-if="selectedAtendimento"
       v-model="showEdicao"
@@ -312,18 +312,18 @@ export default {
     const selectedAtendimento = ref(null);
     const atendimentosFiltrados = computed(() => atendimentos.value);
     const statusMap = {
-      1: { label: "Em aberto",   color: "green" },
-      2: { label: "Encerrado",    color: "grey"  },
-      3: { label: "Reaberto",     color: "blue"  },
-    }
+      1: { label: "Em aberto", color: "green" },
+      2: { label: "Encerrado", color: "grey" },
+      3: { label: "Reaberto", color: "blue" },
+    };
 
     watch(filtroStatus, async (novo) => {
       if (!cliente.value) return;
 
       const mapStatus = {
-        abertos:   1,
+        abertos: 1,
         encerrados: 2,
-        reabertos:  3,
+        reabertos: 3,
       };
 
       const statusNum = mapStatus[novo];
@@ -331,7 +331,6 @@ export default {
         await carregarAtendimentos(idCliente.value, statusNum);
       }
     });
-
 
     async function carregarAtendimentos(idCli, status) {
       loading.value = true;
@@ -395,7 +394,7 @@ export default {
     }
 
     function chipInfo(status) {
-      return statusMap[status] || { label: "-", color: "grey" }
+      return statusMap[status] || { label: "-", color: "grey" };
     }
 
     function formataData(iso) {
@@ -484,7 +483,5 @@ export default {
 </script>
 
 <style scoped>
-.titulo {
-  margin-bottom: 8px;
-}
+
 </style>

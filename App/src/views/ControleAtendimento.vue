@@ -114,157 +114,144 @@
         </v-card>
       </v-col>
       <v-col cols="12" md="9">
-        <v-card class="pa-4" outlined>
-          <v-row dense>
-            <v-col
-              cols="12"
-              sm="6"
-              md="6"
-              v-for="att in displayedAtendimentos"
-              :key="att.id"
-            >
-              <v-card class="mb-4" elevation="8" rounded="lg">
-                <v-card-title class="d-flex justify-space-between">
-                  <v-card-title>ATENDIMENTO #{{ att.id }}</v-card-title>
-                  <v-chip
-                    small
-                    :color="chipInfo(att.status).color"
-                    text-color="white"
-                    class="mr-2"
-                  >
-                    {{ chipInfo(att.status).label }}
-                  </v-chip>
-                </v-card-title>
-                <v-card-text>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-comment-text</v-icon>
-                    {{ att.assunto || "Nenhum assunto" }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
-                    Iniciado em {{ formataData(att.dataCadastro) }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-calendar-check</v-icon>
-                    Finalizado em {{ formataData(att.dataEncerramento) ?? "-" }}
-                  </div>
-                  <div class="d-flex align-center mb-2">
-                    <v-icon small class="mr-1">mdi-account-tie</v-icon>
-                    Usuário Abertura {{ att.idUsuario }}
-                  </div>
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                  <v-btn
+        <v-card
+          outlined
+          class="d-flex flex-column"
+          style="height: 600px;"     
+        >
+          <v-card-title class="pb-2">
+            Atendimentos ({{ displayedAtendimentos.length }})
+          </v-card-title>
+          <v-divider />
+
+          <v-card-text class="pa-4 flex-grow-1 overflow-y-auto">
+            <v-row dense>
+              <v-col
+                cols="12"
+                sm="6"
+                md="6"
+                v-for="att in displayedAtendimentos"
+                :key="att.id"
+              >
+                <v-card class="mb-4" elevation="8" rounded="lg">
+                  <v-card-title class="d-flex justify-space-between">
+                    <span>ATENDIMENTO #{{ att.id }}</span>
+                    <v-chip
+                      small
+                      :color="chipInfo(att.status).color"
+                      text-color="white"
+                      class="mr-2"
+                    >
+                      {{ chipInfo(att.status).label }}
+                    </v-chip>
+                  </v-card-title>
+                  <v-card-text>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-comment-text</v-icon>
+                      {{ att.assunto || "Nenhum assunto" }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-calendar-clock</v-icon>
+                      Iniciado em {{ formataData(att.dataCadastro) }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-calendar-check</v-icon>
+                      Finalizado em {{ formataData(att.dataEncerramento) ?? "-" }}
+                    </div>
+                    <div class="d-flex align-center mb-2">
+                      <v-icon small class="mr-1">mdi-account-tie</v-icon>
+                      Usuário Abertura {{ att.idUsuario }}
+                    </div>
+                  </v-card-text>
+                  <v-card-actions class="justify-end">
+                    <v-btn
                     v-if="att.status !== 2"
                     small
-                    color="secondary"
+                    color="primary"
                     @click="abrirParecer(att)"
-                    title="Parecer"
+                    class="mr-2"
+                    rounded="3"
+                    variant="flat"
                   >
-                    <v-icon left>mdi mdi-chat-plus</v-icon>
+                    Parecer
                   </v-btn>
-                  <v-menu offset-y attach="body" location="top">
-                    <template #activator="{ props }">
-                      <v-btn icon v-bind="props">
-                        <v-icon>mdi-dots-vertical</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list dense>
-                      <v-list-item @click="abrirHistorico(att)">
-                        <v-list-item-title
-                          >Histórico do atendimento</v-list-item-title
+                    <v-menu offset-y attach="body" location="top">
+                      <template #activator="{ props }">
+                        <v-btn icon v-bind="props">
+                          <v-icon>mdi-dots-vertical</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list dense>
+                        <v-list-item @click="abrirHistorico(att)">
+                          <v-list-item-title
+                            >Histórico do atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                        <v-list-item @click="abrirLog(att)">
+                          <v-list-item-title>Log de alteração</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          v-if="att.status === 1 || att.status === 3"
+                          @click="editarAtendimento(att)"
                         >
-                      </v-list-item>
-                      <v-list-item @click="abrirLog(att)">
-                        <v-list-item-title>Log de alteração</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        v-if="att.status === 1 || att.status === 3"
-                        @click="editarAtendimento(att)"
-                      >
-                        <v-list-item-title
-                          >Editar atendimento</v-list-item-title
+                          <v-list-item-title
+                            >Editar atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                        <v-list-item
+                          v-if="att.status === 2"
+                          @click="reabrirAtendimento(att)"
                         >
-                      </v-list-item>
-                      <v-list-item
-                        v-if="att.status === 2"
-                        @click="reabrirAtendimento(att)"
-                      >
-                        <v-list-item-title
-                          >Reabrir atendimento</v-list-item-title
-                        >
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </v-card-actions>
-              </v-card>
-            </v-col>
-            <v-col cols="12" v-if="!displayedAtendimentos.length">
-              <p>Nenhum atendimento para exibir.</p>
-            </v-col>
-          </v-row>
+                          <v-list-item-title
+                            >Reabrir atendimento</v-list-item-title
+                          >
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+              <v-col cols="12" v-if="!displayedAtendimentos.length">
+                <p>Nenhum atendimento para exibir.</p>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-divider />
+          <v-card-actions>
+            <v-spacer />
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog v-model="showForm" max-width="700" persistent>
-      <v-card>
-        <v-card-title>Novo atendimento</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <NovoAtendimento
-            v-if="showForm"
-            :initial="{
-              idCliente: idCliente,
-              status: 1,
-              parecer: { descricao: '', pessoaContato: '' },
-            }"
-            @save="handleSave"
-            @cancel="showForm = false"
-          />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showParecer" max-width="600" persistent>
-      <v-card>
-        <v-card-title>Parecer</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <NovoParecer
-            v-if="showParecer && selectedAtendimento"
-            :atendimento-id="selectedAtendimento.id"
-            @saved="handleParecerSaved"
-            @cancel="showParecer = false"
-          />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showHistorico" max-width="800" persistent>
-      <v-card>
-        <v-card-title>Histórico Atendimento</v-card-title>
-        <v-divider />
-        <v-card-text>
-          <HistoricoAtendimento
-            v-if="showHistorico && selectedAtendimento"
-            :atendimento-id="selectedAtendimento.id"
-          />
-        </v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn text @click="showHistorico = false">Fechar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog v-model="showLog" max-width="600" persistent>
-      <LogsAtendimento
-        v-if="showLog && selectedAtendimento"
-        :atendimento-id="selectedAtendimento.id"
-        @close="showLog = false"
-      />
-    </v-dialog>
+
+    <NovoParecer
+      v-model="showParecer"
+      v-if="showParecer && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+      @saved="handleParecerSaved"
+      @cancel="showParecer = false"
+    />
+
+    <HistoricoAtendimento
+      v-model="showHistorico"
+      @click="showHistorico = false"
+      v-if="showHistorico && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+    />
+
+    <LogsAtendimento
+      v-model="showLog"
+      v-if="showLog && selectedAtendimento"
+      :atendimento-id="selectedAtendimento.id"
+      @close="showLog = false"
+    />
+
     <MotivoReabertura
       v-model="showReabrir"
       :atendimento="selectedAtendimento"
       @submitted="handleReabrirSaved"
     />
+
     <EditarAtendimento
       v-if="selectedAtendimento"
       v-model="showEdit"
@@ -314,7 +301,7 @@ export default {
     const filters = reactive({
       userId: null,
       clientId: null,
-      status: null,
+      status: "Aberto",
       startDate: null,
       endDate: null,
     });
@@ -529,4 +516,5 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>
