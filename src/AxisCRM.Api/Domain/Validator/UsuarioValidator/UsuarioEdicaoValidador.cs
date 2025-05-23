@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation;
-using AxisCRM.Api.DTO.Usuario;
 
 namespace AxisCRM.Api.Domain.Validator
 {

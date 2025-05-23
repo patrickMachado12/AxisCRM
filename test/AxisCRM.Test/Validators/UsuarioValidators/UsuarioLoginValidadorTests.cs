@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation.TestHelper;
 using AxisCRM.Api.Domain.Validator;
 using AxisCRM.Api.DTO.Usuario;
-using Xunit;
 
 namespace AxisCRM.Test.Validators
 {

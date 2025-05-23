@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Exceptions;
 using AxisCRM.Api.Domain.Services.Interfaces;
-using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Atendimento;
 
 namespace AxisCRM.Api.Domain.Services.Classes
@@ -37,9 +32,6 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
         public async Task<AtendimentoResponseDTO> Adicionar(AtendimentoRequestDTO entidade)
         {
-            // TODO:  Verificar para adicionar essas verificações em uma regra de negocio.
-            // TODO:  Se tem mais de 2 Ifs, já é bom refatorar e por em uma função separada.
-
             if (await _clienteRepository.ObterPorIdAsync(entidade.IdCliente) == null)
                 throw new BadRequestException($"Cliente com id {entidade.IdCliente} não encontrado. Verifique!");
 
@@ -66,8 +58,6 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
         public async Task<AtendimentoResponseDTO> AlterarStatus(int id, AtendimentoEdicaoStatusRequestDTO RequestDTO)
         {
-            // TODO:  Verificar para adicionar essas verificações em uma regra de negocio.
-            // TODO:  Se tem mais de 2 Ifs, já é bom refatorar e por em uma função separada.
             var atendimento = await _atendimentoRepository.ObterPorIdAsync(id);
             if (atendimento == null)
                 throw new NotFoundException($"Atendimento {id} não encontrado.");
@@ -85,7 +75,6 @@ namespace AxisCRM.Api.Domain.Services.Classes
 
             atendimento.Status = RequestDTO.Status;
 
-            //TODO: Aqui utilizei um ternário e a interpolação para criar o histórico.
             var acao = RequestDTO.Status == StatusAtendimento.Reaberto ? "Reaberto" : "Encerrado";
             var motivo = !string.IsNullOrWhiteSpace(RequestDTO.Motivo)
                         ? $" - Motivo: {RequestDTO.Motivo}"
@@ -127,7 +116,6 @@ namespace AxisCRM.Api.Domain.Services.Classes
             DateTime? dataFinal)
         {
             //TODO: Utilizei uma função chamada "Pattern-matching" que foi implementada no C# 7.
-            //TODO: Junto a ela, utilizei uma interpolação para retornar a mensagem de erro ao usuário.
             if (status is not (StatusAtendimento.Aberto
                    or StatusAtendimento.Encerrado
                    or StatusAtendimento.Reaberto))

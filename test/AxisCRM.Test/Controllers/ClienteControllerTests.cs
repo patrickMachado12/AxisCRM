@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 using AxisCRM.Api.Controllers;
 using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.Domain.Services.Exceptions;
 using AxisCRM.Api.DTO.Cliente;
 using AxisCRM.Api.DTO;
-using AxisCRM.Api.Domain.Validator;
 using AxisCRM.Api.Domain.Validator.ClienteValidator;
 using AxisCRM.Api.Domain.Enums;
 

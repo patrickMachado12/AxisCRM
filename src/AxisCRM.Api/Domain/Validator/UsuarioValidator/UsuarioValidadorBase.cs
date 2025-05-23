@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FluentValidation;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.DTO.Usuario;

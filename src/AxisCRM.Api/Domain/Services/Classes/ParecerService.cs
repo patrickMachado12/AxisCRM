@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Exceptions;
 using AxisCRM.Api.Domain.Services.Interfaces;
-using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Parecer;
 
 namespace AxisCRM.Api.Domain.Services.Classes

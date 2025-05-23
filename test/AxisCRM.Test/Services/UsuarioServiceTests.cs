@@ -1,8 +1,5 @@
-using Xunit;
 using Moq;
 using AutoMapper;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AxisCRM.Api.DTO.Usuario;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Classes;

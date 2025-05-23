@@ -1,12 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AxisCRM.Api.Domain.Enums;
 using AxisCRM.Api.Domain.Services.Interfaces;
-using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Atendimento;
 using AxisCRM.Api.DTO.Parecer;
 using FluentValidation;
@@ -55,7 +49,6 @@ namespace AxisCRM.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<AtendimentoResponseDTO>> AdicionarAtendimento(AtendimentoRequestDTO dto)
         {
-            // TODO: Verificar a possibilidade de adicionar essa questão do IdUsuario do token em uma função separada e isolada. Algo como token mesmo.
             var idUsuario = User.Claims.First(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             dto.IdUsuario = Convert.ToInt32(idUsuario);
             dto.Parecer.IdUsuario = Convert.ToInt32(idUsuario);

@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using Xunit;
 using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Repository.Interfaces;
 using AxisCRM.Api.Domain.Services.Classes;
 using AxisCRM.Api.Domain.Services.Exceptions;
 using AxisCRM.Api.DTO.Cliente;
 using AxisCRM.Api.DTO;
-using AxisCRM.Api.Domain.Helper;
 using AxisCRM.Api.Domain.Enums;
 
 namespace AxisCRM.Test.Services

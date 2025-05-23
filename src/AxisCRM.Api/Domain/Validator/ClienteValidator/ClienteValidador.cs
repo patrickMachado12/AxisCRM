@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using AxisCRM.Api.DTO.Cliente;
 using AxisCRM.Api.Domain.Enums;
 using FluentValidation;

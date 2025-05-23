@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AxisCRM.Api.Data.Mappings;
 using AxisCRM.Api.Domain.Models;
 using Microsoft.EntityFrameworkCore;

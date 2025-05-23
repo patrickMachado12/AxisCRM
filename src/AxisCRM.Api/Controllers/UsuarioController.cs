@@ -1,10 +1,8 @@
 using FluentValidation;
-using AxisCRM.Api.Domain.Models;
 using AxisCRM.Api.Domain.Services.Interfaces;
 using AxisCRM.Api.DTO;
 using AxisCRM.Api.DTO.Usuario;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using AxisCRM.Api.Domain.Validator;
@@ -79,7 +77,6 @@ namespace AxisCRM.Api.Controllers
         }
 
         [HttpGet]
-        [Route("")]
         [Authorize(Policy = "Admin")]
         [SwaggerOperation(
             Summary = "Obtém uma lista de usuários.", 
