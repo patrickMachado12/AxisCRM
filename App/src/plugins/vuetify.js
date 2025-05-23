@@ -8,43 +8,38 @@ import pt from 'vuetify/lib/locale/pt.mjs'
 export default createVuetify({
   components,
   directives,
-   locale: {
+  locale: {
     locale: 'pt',
     fallback: 'en',
     messages: { pt },
   },
-  // theme: {
-  //   themes: {
-  //     light: {
-  //       colors: {
-  //         primary: '#1976D2',
-  //         secondary: '#5CBBF6',
-  //       },
-  //     },
-  //   },
-  // },
-
   theme: {
-    defaultTheme: "light",    // tema inicial
+    defaultTheme: 'light',
     themes: {
       light: {
         dark: false,
         colors: {
-          primary: "#1976D2",
-          secondary: "#424242",
-          background: "#FFFFFF",
-          surface: "#FFFFFF",
-          // defina suas cores customizadas...
+          primary:   '#1976D2',
+          secondary: '#424242', 
+          success:   '#4CAF50', 
+          error:     '#F44336', 
+          warning:   '#FB8C00', 
+          info:      '#2196F3', 
+          background:'#FFFFFF',
+          surface:   '#FFFFFF',
         },
       },
       dark: {
         dark: true,
         colors: {
-          primary: "#2196F3",
-          secondary: "#B0BEC5",
-          background: "#121212",
-          surface: "#1E1E1E",
-          // ajuste as cores para o modo dark
+          primary:   '#1976D2',
+          secondary: '#424242',
+          success:   '#4CAF50',
+          error:     '#F44336',
+          warning:   '#FB8C00',
+          info:      '#2196F3',
+          background:'#121212',
+          surface:   '#1E1E1E',
         },
       },
     },

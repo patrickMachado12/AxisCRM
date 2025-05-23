@@ -21,10 +21,19 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn text @click="close">Cancelar</v-btn>
-        <v-btn color="primary" @click="submit" :disabled="!isValid">
-          Salvar
-        </v-btn>
+        <v-btn
+            class="mr-2"
+            color="primary"
+            @click="submit"
+            rounded="3"
+            variant="flat"
+            :disabled="!isValid"
+          >
+            Gravar
+          </v-btn>
+          <v-btn class="mr-2" variant="tonal" @click="$emit('cancel')">
+            Cancelar
+          </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

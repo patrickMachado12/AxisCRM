@@ -1,22 +1,25 @@
 <template>
   <v-container fluid>
-    <MensagemSucesso ref="successMessage" :message="message" />
-
     <v-row class="d-flex align-center mb-4">
       <v-col cols="12">
-        <h2 class="titulo">Cadastro de Usuários</h2>
+        <v-card-title>Cadastro de Usuários</v-card-title>
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <v-btn id="btn-cadastrar" dark type="button" @click="abrirDialog()">
+        <v-btn 
+          id="btn-cadastrar" 
+          color="primary" 
+          type="button" 
+          @click="abrirDialog()"
+        >
           Cadastrar
         </v-btn>
       </v-col>
     </v-row>
-
     <v-dialog
       v-model="dialog"
       persistent
+      scrollable
       max-width="600px"
       :fullscreen="smAndDown"
     >
@@ -24,6 +27,7 @@
         <v-card-title>
           <span class="text-h5">{{ formTitulo }}</span>
         </v-card-title>
+        <v-divider />
         <v-card-text>
           <v-container>
             <v-row>
@@ -34,7 +38,6 @@
                   required
                 />
               </v-col>
-
               <v-col cols="12" sm="12" md="6">
                 <v-text-field
                   type="password"
@@ -44,7 +47,6 @@
                   :required="!editedItem.id"
                 />
               </v-col>
-
               <v-col cols="12" sm="12" md="6">
                 <v-select
                   v-model="editedItem.perfil"
@@ -58,19 +60,28 @@
             </v-row>
           </v-container>
         </v-card-text>
-
+        <v-divider />
         <v-card-actions>
           <v-spacer />
-          <v-btn id="btn-gravar" type="button" @click="gravar()">
+          <v-btn 
+            id="btn-gravar" 
+            color="primary" 
+            @click="gravar()"
+            class="mr-2"
+            rounded="3"
+            variant="flat"
+          >
             Gravar
           </v-btn>
-          <v-btn text type="button" @click="dialog = false">
-            Fechar
+          <v-btn
+            variant="tonal"  
+            @click="dialog = false"
+          >
+            Cancelar
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-
     <v-row>
       <v-col cols="12">
         <v-data-table-server
@@ -80,7 +91,7 @@
           v-model:page="pagina"
           v-model:items-per-page="itensPorPagina"
           :items-length="totalItens"
-          class="elevation-1"
+          class="elevation-8"
         >
           <template #item.perfil="{ item }">
             {{ perfisOptions.find(p => p.value === item.perfil)?.label }}
@@ -105,13 +116,38 @@
             <v-icon small class="mr-2" @click="editItem(item)">
               mdi-pencil
             </v-icon>
-            <v-icon small @click="deleteItem(item)">
+            <v-icon small @click="promptDelete(item)">
               mdi-delete
             </v-icon>
           </template>
         </v-data-table-server>
       </v-col>
     </v-row>
+    <v-dialog v-model="confirmDialog" max-width="400px">
+      <v-card>
+        <v-card-title class="text-h6">
+          Confirmar exclusão
+        </v-card-title>
+        <v-card-text>
+          Tem certeza que deseja excluir
+          <strong>{{ itemParaExcluir?.email }}</strong>?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn 
+            id="btn-confirm-delete" 
+            color="primary"
+            variant="outlined"
+            @click="deleteItemConfirmado"
+          >
+            Sim, excluir
+          </v-btn>
+          <v-btn text @click="confirmDialog = false">
+            Não
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -119,7 +155,8 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useDisplay } from 'vuetify'
 import { useUsuarios } from '@/composables/useUsuarios'
-import MensagemSucesso from '@/components/alerts/MensagemSucesso.vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const { 
   usuarios, 
@@ -130,12 +167,9 @@ const {
   deleteUsuario 
 } = useUsuarios()
 
-// diálogo e estado
 const dialog = ref(false)
 const editedItem = ref({})
-const message = ref('')
 
-// responsividade
 const { smAndDown } = useDisplay()
 
 const perfisOptions = [
@@ -161,26 +195,23 @@ const headers = [
 const pagina = ref(1)
 const itensPorPagina = ref(5)
 
-// título do formulário
 const formTitulo = computed(() =>
   editedItem.value.id ? 'Editar' : 'Cadastrar'
 )
 
-// recarrega lista ao mudar página ou tamanho
+const confirmDialog = ref(false)
+const itemParaExcluir = ref(null)
+
 watch([pagina, itensPorPagina], () => {
   loadUsuarios(pagina.value, itensPorPagina.value)
 })
 
-// chamada inicial
 onMounted(() => loadUsuarios(pagina.value, itensPorPagina.value))
 
-// abre diálogo para novo/edição
 function abrirDialog(item) {
   if (item) {
-    // edição: clona todos os campos
     editedItem.value = { ...item }
   } else {
-    // cadastro: inicia campos vazios e perfil padrão
     editedItem.value = {
       email: '',
       senha: '',
@@ -199,11 +230,9 @@ async function gravar() {
 
     ...(editedItem.value.id ? { id: editedItem.value.id } : {})
   }
-  
   await saveUsuario(payload)
-  message.value = 'Usuário salvo com sucesso!'
+  toast.success('Sucesso!')
   dialog.value = false
-
   loadUsuarios(pagina.value, itensPorPagina.value)
 }
 
@@ -211,10 +240,17 @@ function editItem(item) {
   abrirDialog(item)
 }
 
-async function deleteItem(item) {
-  await deleteUsuario(item.id)
-  message.value = 'Usuário excluído com sucesso!'
+function promptDelete(item) {
+  itemParaExcluir.value = item
+  confirmDialog.value = true
+}
+
+async function deleteItemConfirmado() {
+  await deleteUsuario(itemParaExcluir.value.id)
+  toast.success('Usuário excluído com sucesso!')
   loadUsuarios(pagina.value, itensPorPagina.value)
+  confirmDialog.value = false
+  itemParaExcluir.value = null
 }
 
 function formatDate(date) {
@@ -223,21 +259,5 @@ function formatDate(date) {
 </script>
 
 <style scoped>
-#btn-cadastrar {
-  background-color: var(--cor-primaria);
-  margin-left: 12px;
-}
 
-#btn-gravar {
-  background-color: var(--cor-primaria);
-  color: #fff;
-}
-
-.v-btn {
-  text-transform: none;
-}
-
-.titulo {
-  margin-bottom: 8px;
-}
 </style>

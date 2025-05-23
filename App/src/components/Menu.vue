@@ -2,34 +2,18 @@
   <div>
     <v-app-bar color="#1976D2" elevation="2">
       <v-app-bar-nav-icon @click="drawer = !drawer" />
-
       <v-toolbar-title class="logo-menu">
         <v-img src="@/assets/Logo-menu.png" height="160" contain />
       </v-toolbar-title>
-
-      <!-- Botão de Dark Mode -->
       <v-btn icon @click="toggleDark">
         <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent' }}</v-icon>
       </v-btn>
-
-      <!-- Botão Sair -->
       <v-btn prepend-icon="mdi-exit-to-app" @click="logOff" variant="text" size="large">
         Sair
       </v-btn>
     </v-app-bar>
-
     <v-navigation-drawer v-model="drawer" temporary>
       <v-list nav dense>
-        <!-- Dashboard Atendimentos -->
-        <v-list-item 
-          @click="navigate('Dashboard')" 
-          :active="isRoute('Dashboard')"
-          prepend-icon="mdi mdi-monitor-dashboard"
-          variant="plain">
-          Dashboard
-        </v-list-item>
-
-        <!-- CRM -->
         <v-list-group value="CRM">
           <template #activator="{ props }">
             <v-list-item
@@ -47,15 +31,13 @@
             Administrador
           </v-list-item>
           <v-list-item 
-            @click="navigate('Atendimentos')" 
-            :active="isRoute('Atendimentos')" 
+            @click="navigate('Atendimento')" 
+            :active="isRoute('Atendimento')" 
             prepend-icon="mdi mdi-account-details"
             variant="plain">
-            Atendimentos
+            Atendimento
           </v-list-item>
         </v-list-group>
-
-        <!-- Cliente -->
         <v-list-item 
           @click="navigate('ControleCliente')" 
           :active="isRoute('ControleCliente')"
@@ -63,8 +45,6 @@
           variant="plain">
           Clientes
         </v-list-item>
-
-        <!-- Usuário -->
         <v-list-item 
           @click="navigate('ControleUsuario')" 
           :active="isRoute('ControleUsuario')"
@@ -88,14 +68,9 @@ export default defineComponent({
     const drawer = ref(false);
     const router = useRouter();
     const route = useRoute();
-
-    // composable do Vuetify 3
     const theme = useTheme();
-    // computado para alterar ícone conforme o modo
     const isDark = computed(() => theme.global.current.value.dark);
-
     function toggleDark() {
-      // alterna entre 'light' e 'dark'
       theme.global.name.value = isDark.value ? 'light' : 'dark';
     }
 

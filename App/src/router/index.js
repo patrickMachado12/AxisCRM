@@ -8,7 +8,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth && !store.getters['auth/isLoggedIn']) {
+  if (to.meta.requiredAuth && !store.getters['auth/isLoggedIn']) {
     return next({ name: 'Login' })
   }
   next()
