@@ -21,6 +21,13 @@ O sistema permite CRUD de usuários, clientes, atendimentos e pareceres, com val
 - **Swagger / Swashbuckle** (UI interativa em `/swagger`)  
 - **xUnit**, **Moq**, **AutoFixture** (testes unitários e mocks)  
 - **VS Code REST Client** (arquivo `AxisCRM.Api.http` para testar endpoints)
+  
+---
+
+## Documentações
+
+Toda a documentação do projeto encontra-se na raiz em "Documentação"
+
 
 ---
 
