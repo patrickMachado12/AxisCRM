@@ -1,17 +1,17 @@
 <template>
-  <v-dialog v-model="showParecer" max-width="600" persistent>
+  <v-dialog v-model="showParecer" max-width="500" persistent>
     <v-form ref="formRef" @submit.prevent="onSubmit">
       <v-card style="overflow-y: hidden">
         <v-card-title>Parecer</v-card-title>
         <v-divider />
-        <v-card-text>
+        <v-card-text style="overflow-y: auto">
           <v-row>
             <v-col cols="12" md="4">
               <v-text-field
                 v-model="atendimento.id"
                 label="Atendimento"
                 readonly
-                dense
+                denses
               />
             </v-col>
             <v-col cols="12" md="8">
